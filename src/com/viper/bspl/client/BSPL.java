@@ -1,11 +1,9 @@
 package com.viper.bspl.client;
 
 import com.google.gwt.core.client.EntryPoint;
-import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.user.client.ui.DecoratedTabPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.RootPanel;
-import com.google.gwt.user.client.ui.TabLayoutPanel;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.

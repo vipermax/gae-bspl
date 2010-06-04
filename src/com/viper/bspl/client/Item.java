@@ -9,6 +9,12 @@ public class Item {
 	private boolean isAutoCalulate = false;
 	private ArrayList<Item> children = new ArrayList<Item>();
 	
+	public Item(String name, float amount, boolean isAutoCalulate) {
+		this.name = name;
+		this.amount = amount;
+		this.isAutoCalulate = isAutoCalulate;
+	}
+	
 	public String getName() {
 		return name;
 	}
@@ -16,7 +22,7 @@ public class Item {
 		this.name = name;
 	}
 	public float getAmount() {
-		if(isAutoCalulate) {
+		if(isAutoCalulate && children.size() > 0) {
 			float sum = 0.0f;
 			for(Item child : children) {
 				sum += child.getAmount();
