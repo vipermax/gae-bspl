@@ -34,7 +34,10 @@ public class BSPL implements EntryPoint {
 	}
 	
 	private void loadFooter() {
-		
+		// footer
+		FlowPanel footer = new FlowPanel();
+		footer.add(new InlineLabel("Version: " + ProductInfo.version));
+		RootPanel.get("footer").add(footer);
 	}
 	
 	private void loadInfoArea() {

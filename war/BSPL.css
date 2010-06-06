@@ -17,6 +17,14 @@ div#mainArea {
 	margin: 10px;
 }
 
+div#footer {
+	margin: 10px;
+}
+
+.btnPreview {
+	margin-left: 20px !important;
+}
+
 table {
 	border-collapse: collapse;
 }
@@ -28,6 +36,10 @@ table {
 
 .mainTable td{
 	vertical-align: top;
+}
+
+.blockTable tr:hover {
+	background-color: #ffbb88;
 }
 
 td input[type="text"][disabled] {
@@ -50,12 +62,12 @@ td input[type="text"] {
 }
 
 td input[type="text"]:hover {
-	background-color: #ffaa00;
-	border: 1px solid white;
+	background-color: #ffffdd;
+	border: 1px solid red;
 }
 
 td input[type="text"]:focus {
-	background-color: #ffaa00;
+	background-color: #ffff33;
 	border: 1px solid red;
 }
 
@@ -67,7 +79,7 @@ td input[type="text"]:focus {
 	text-align: right;
 }
 
-.bsRowLevel0 {
+.bsRowLevel0:hover {
 }
 
 .bsCellLevel0 {

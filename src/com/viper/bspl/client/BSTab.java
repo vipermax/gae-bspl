@@ -23,6 +23,7 @@ public class BSTab extends BaseTab {
 
 		// preview button
 		Button prevButton = new Button("プレビュー");
+		prevButton.addStyleName("btnPreview");
 		prevButton.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
@@ -30,8 +31,8 @@ public class BSTab extends BaseTab {
 			}
 		});
 		
-		fp.add(stateVC.getDataTable());
 		fp.add(prevButton);
+		fp.add(stateVC.getDataTable());
 	}
 	
 	private void preview() {

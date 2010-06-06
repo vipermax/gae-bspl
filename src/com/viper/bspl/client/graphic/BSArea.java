@@ -1,7 +1,6 @@
 package com.viper.bspl.client.graphic;
 
 import org.vaadin.gwtgraphics.client.DrawingArea;
-import org.vaadin.gwtgraphics.client.Line;
 import org.vaadin.gwtgraphics.client.shape.Rectangle;
 import org.vaadin.gwtgraphics.client.shape.Text;
 
@@ -12,6 +11,7 @@ import com.viper.bspl.client.vc.TextUtil;
 
 public class BSArea extends BaseGraphic {
 
+	int FONT_SIZE_BLOCK_NAME = 16;
 	int FONT_SIZE_NAME = 12;
 	int FONT_SIZE_NUMBER = 8;
 	
@@ -38,6 +38,11 @@ public class BSArea extends BaseGraphic {
 		heightScale = (double)drawArea.getHeight() / total;
 		wide = (int) (total * heightScale * 0.3);
 		
+		float fontRate = drawArea.getHeight() / 400;
+		FONT_SIZE_BLOCK_NAME = (int) (FONT_SIZE_BLOCK_NAME * fontRate);
+		FONT_SIZE_NAME = (int) (FONT_SIZE_NAME * fontRate);
+		FONT_SIZE_NUMBER = (int) (FONT_SIZE_NUMBER * fontRate);
+		
 		// drawStatement
 		drawStatement();
 	}
@@ -48,17 +53,17 @@ public class BSArea extends BaseGraphic {
 		start.X = (drawArea.start.X + drawArea.end.X) / 2 - wide;
 		start.Y = drawArea.start.Y;
 		for(Item item : state.getLeftPart()) {
-			start = drawTopLevel(item, start);
+			start = drawTopLevel(item, start, false);
 		}
 		// right
 		start.X = (drawArea.start.X + drawArea.end.X) / 2;
 		start.Y = drawArea.start.Y;
 		for(Item item : state.getRightPart()) {
-			start = drawTopLevel(item, start);
+			start = drawTopLevel(item, start, true);
 		}
 	}
 	
-	private Point drawTopLevel(Item item, Point start) {
+	private Point drawTopLevel(Item item, Point start, boolean rightSide) {
 		
 		if(0f == item.getAmount()) {
 			return start;
@@ -72,13 +77,13 @@ public class BSArea extends BaseGraphic {
 		
 		Point childStart = start;
 		for(Item child : item.getChildren()) {
-			childStart = drawBlock(child, childStart);
+			childStart = drawBlock(child, childStart, rightSide);
 		}
 		
 		return new Point(start.X, (int) (start.Y + item.getAmount() * heightScale));
 	}
 	
-	private Point drawBlock(Item item, Point start) {
+	private Point drawBlock(Item item, Point start, boolean rightSide) {
 
 		if(0f == item.getAmount()) {
 			return start;
@@ -96,9 +101,18 @@ public class BSArea extends BaseGraphic {
 		if(showNumber || showPercent) {
 			nameTextY -= FONT_SIZE_NAME / 2;
 		}
-		int centerX = start.X - 20;
-		Text nameText = TextUtil.generateText(centerX, nameTextY, item.getName(), FONT_SIZE_NAME, "black");
-		nameText.setRotation(90);
+		int centerX;
+		if(rightSide) {
+			centerX = start.X + wide + 20;
+		} else {
+			centerX = start.X - 20;
+		}
+		Text nameText = TextUtil.generateText(centerX, nameTextY, item.getName(), FONT_SIZE_BLOCK_NAME, "black");
+		if(rightSide) {
+			nameText.setRotation(270);
+		} else {
+			nameText.setRotation(90);
+		}
 		canvas.add(nameText);
 		
 		Point childStart = start;
@@ -125,30 +139,32 @@ public class BSArea extends BaseGraphic {
 		canvas.add(rect);
 
 		// name text
-		int nameTextY = start.Y + (int) (item.getAmount() * heightScale) / 2;
-		if(showNumber || showPercent) {
-			nameTextY -= FONT_SIZE_NAME / 2;
-		}
-		int centerX = start.X + wide / 2;
-		Text nameText = TextUtil.generateText(centerX, nameTextY, item.getName(), FONT_SIZE_NAME, "black");
-		canvas.add(nameText);
-		
-		// number text
-		if(showNumber || showPercent) {
-			String numberString = "";
-			if(showNumber) {
-				numberString += fmAmount.format(item.getAmount());
+		if(item.getAmount() * heightScale > FONT_SIZE_NAME) {
+			int nameTextY = start.Y + (int) (item.getAmount() * heightScale) / 2;
+			if(showNumber || showPercent) {
+				nameTextY -= FONT_SIZE_NAME / 2;
 			}
-			if(showNumber && showPercent) {
-				numberString += " ";
-			}
-			if(showPercent) {
-				numberString += "(" + fmPercent.format(item.getAmount() / total * 100) + "%)";
-			}
+			int centerX = start.X + wide / 2;
+			Text nameText = TextUtil.generateText(centerX, nameTextY, item.getName(), FONT_SIZE_NAME, "black");
+			canvas.add(nameText);
 			
-			int numberTextY = start.Y + (int) (item.getAmount() * heightScale) / 2 + FONT_SIZE_NUMBER / 2;
-			Text numberText = TextUtil.generateText(centerX, numberTextY, numberString, FONT_SIZE_NUMBER, "black");
-			canvas.add(numberText);
+			// number text
+			if(showNumber || showPercent) {
+				String numberString = "";
+				if(showNumber) {
+					numberString += fmAmount.format(item.getAmount());
+				}
+				if(showNumber && showPercent) {
+					numberString += " ";
+				}
+				if(showPercent) {
+					numberString += "(" + fmPercent.format(item.getAmount() / total * 100) + "%)";
+				}
+				
+				int numberTextY = start.Y + (int) (item.getAmount() * heightScale) / 2 + FONT_SIZE_NUMBER / 2;
+				Text numberText = TextUtil.generateText(centerX, numberTextY, numberString, FONT_SIZE_NUMBER, "black");
+				canvas.add(numberText);
+			}
 		}
 		
 		return new Point(start.X, (int) (start.Y + item.getAmount() * heightScale));
