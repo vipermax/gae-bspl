@@ -29,7 +29,8 @@ public class LoginView extends BaseView {
 		titleLabel.addStyleName("loginTitle");
 		loginPanel.add(titleLabel);
 		loginPanel.add(new HTML("<br/>"));
-		loginPanel.add(new Label("Googleアカウントでログインしてください。"));
+		loginPanel.add(new Label("このアプリケーションを利用するに、"));
+		loginPanel.add(new Label("Googleアカウントでログインする必要があります。"));
 		loginPanel.add(signInLink);
 		
 		PopupPanel popup = new PopupPanel(false);

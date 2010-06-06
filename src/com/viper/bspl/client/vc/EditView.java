@@ -90,8 +90,8 @@ public class EditView extends BaseView {
 		bsTab.init();
 		
 		mainTab.add(bsTab.getContent(), "BS");
-		mainTab.add(new HTML("<h2>このページは開発中です。</h2>"), "PL");
-		mainTab.add(new HTML("<h2>このページは開発中です。</h2>"), "比例図（結果）");
+		mainTab.add(new HTML("<h2>この機能は開発中です。</h2>"), "PL");
+		mainTab.add(new HTML("<h2>この機能は開発中です。</h2>"), "比例図（結果）");
 
 		mainTab.setWidth("100%");
 		mainTab.selectTab(0);
