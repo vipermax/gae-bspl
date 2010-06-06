@@ -19,10 +19,11 @@ public class BSTab extends BaseTab {
 	StatementVC stateVC = new StatementVC(state);
 	
 	@Override
+	public
 	void init() {
 
 		// preview button
-		Button prevButton = new Button("プレビュー");
+		Button prevButton = new Button("BSプレビュー");
 		prevButton.addStyleName("btnPreview");
 		prevButton.addClickHandler(new ClickHandler() {
 			@Override
@@ -45,7 +46,7 @@ public class BSTab extends BaseTab {
 		BSArea bsGraphic = new BSArea(popCanvas, state);
 		bsGraphic.reDraw();
 		
-		final PopupPanel popup = new PopupPanel(false, true);
+		final PopupPanel popup = new PopupPanel();
 		popup.addStyleName("popup");
 		VerticalPanel popupContent = new VerticalPanel();
 		popupContent.add(popCanvas);
@@ -58,6 +59,10 @@ public class BSTab extends BaseTab {
 		});
 		popupContent.add(closeBtn);
 		popup.add(popupContent);
+		
+		popup.setAutoHideEnabled(true);
+		popup.setGlassEnabled(true);
+		popup.setModal(true);
 		popup.center();
 	}
 	

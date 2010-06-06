@@ -1,28 +1,49 @@
 body {
 }
 
+.loginPopup {
+	padding: 30px !important;
+	text-align: center;
+}
+
+.loginTitle {
+	font-size: 20px;
+	font-weight: bold;
+}
+
 h1 {
 	font-size: 20px;
 	font-weight: bold;
 	color: #777777;
 	text-align: left;
-	margin: 0 0 5px 5px;
+	margin: 5px 10px;
 }
 
-div#infoArea {
+div.headerArea {
+	margin: 0;
+}
+
+div.headerLine {
+	text-align: right;
+	margin: 2px;
+	border-bottom: 1px solid #92c1f0;
+}
+
+div.infoArea {
 	margin: 10px;
 }
 
-div#mainArea {
+div.mainArea {
 	margin: 10px;
 }
 
-div#footer {
+div.footerArea {
 	margin: 10px;
 }
 
 .btnPreview {
 	margin-left: 20px !important;
+	margin-top: 10px !important;
 }
 
 table {
@@ -36,10 +57,6 @@ table {
 
 .mainTable td{
 	vertical-align: top;
-}
-
-.blockTable tr:hover {
-	background-color: #ffbb88;
 }
 
 td input[type="text"][disabled] {
@@ -79,7 +96,7 @@ td input[type="text"]:focus {
 	text-align: right;
 }
 
-.bsRowLevel0:hover {
+.bsRowLevel0 {
 }
 
 .bsCellLevel0 {
@@ -117,6 +134,10 @@ td input[type="text"]:focus {
 }
 
 .bsRowLevelNormal {
+}
+
+.bsRowLevelNormal:hover {
+	background-color: #ffbb88;
 }
 
 .bsCellLevelNormal {

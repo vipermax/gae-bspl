@@ -1,80 +1,91 @@
 package com.viper.bspl.client;
 
-import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.google.gwt.core.client.EntryPoint;
-import com.google.gwt.i18n.client.DateTimeFormat;
-import com.google.gwt.user.client.ui.DecoratedTabPanel;
-import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.InlineLabel;
-import com.google.gwt.user.client.ui.ListBox;
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.RootPanel;
-import com.google.gwt.user.client.ui.TextBox;
+import com.viper.bspl.client.vc.BaseView;
+import com.viper.bspl.client.vc.EditView;
+import com.viper.bspl.client.vc.LoginView;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
  */
 public class BSPL implements EntryPoint {
 
+	public enum VIEW_TYPE {
+		loginView,
+		listView,
+		editView,
+	}
+	
+	BaseView currentView = null;
+	
+	static private LoginInfo loginInfo = null;
+	
 	@Override
 	public void onModuleLoad() {
 		
-		loadHeader();
+		// check login status
+		LoginServiceAsync loginService = GWT.create(LoginService.class);
+		loginService.login(GWT.getHostPageBaseURL(), new AsyncCallback<LoginInfo>() {
+			@Override
+			public void onSuccess(LoginInfo result) {
+				loginInfo = result;
+				if(loginInfo.isLoggedIn()) {
+					Map<String, String> params = new HashMap<String, String>();
+					switchView(VIEW_TYPE.editView, params);
+				} else {
+					Map<String, String> params = new HashMap<String, String>();
+					params.put(LoginView.PARAM_LOGINURL, loginInfo.getLoginUrl());
+					switchView(VIEW_TYPE.loginView, params);
+				}
+			}
+			@Override
+			public void onFailure(Throwable caught) {
+			}
+		});
 		
-		loadInfoArea();
-		
-		loadMainArea();
-		
-		loadFooter();
 	}
 	
-	private void loadHeader() {
+	static public LoginInfo getLoginInfo() {
+		return loginInfo;
+	}
+
+	public void switchView(VIEW_TYPE type, Map<String, String> parameters) {
 		
-	}
-	
-	private void loadFooter() {
-		// footer
-		FlowPanel footer = new FlowPanel();
-		footer.add(new InlineLabel("Version: " + ProductInfo.version));
-		RootPanel.get("footer").add(footer);
-	}
-	
-	private void loadInfoArea() {
-		// infomation area
-		FlowPanel infoArea = new FlowPanel();
-		infoArea.add(new InlineLabel("会社名:"));
-		infoArea.add(new TextBox());
-		infoArea.add(new InlineLabel("年度:"));
-		ListBox yearList = new ListBox();
-		yearList.addItem("", "-1");
-		int currentYear = Integer.parseInt(DateTimeFormat.getFormat("yyyy").format(new Date()));
-		for(int i = 1970; i < currentYear + 5; i++) {
-			yearList.addItem(Integer.toString(i), Integer.toString(i));
+		// close current view
+		if(null != currentView) {
+			if(!currentView.closeView()) {
+				return;
+			}
 		}
-		infoArea.add(yearList);
 		
-		RootPanel.get("infoArea").add(infoArea);
+		// clearPage
+		RootPanel.get("view").clear();
+		
+		// create new view
+		currentView = createNewView(type, parameters);
+		if(null != currentView) {
+			currentView.initView();
+			RootPanel.get("view").add(currentView);
+		}
 	}
 	
-	private void loadMainArea() {
-		// main area
-		DecoratedTabPanel mainTab = new DecoratedTabPanel();
-		
-		BSTab bsTab = new BSTab();
-		bsTab.init();
-		
-		mainTab.add(bsTab.getContent(), "[BS]");
-		mainTab.add(new HTML("<h2>Hello tab 2</h2>"), "[PL]");
-		mainTab.add(new HTML("BS/PL"), "[BS/PL]");
-
-		TestTab testTab = new TestTab();
-		testTab.init();
-		mainTab.add(testTab.getContent(), "[TEST]");
-
-		mainTab.setWidth("100%");
-		mainTab.selectTab(0);
-		
-		RootPanel.get("mainArea").add(mainTab);
+	private BaseView createNewView(VIEW_TYPE type, Map<String, String> parameters) {
+		switch (type) {
+		case loginView:
+			return new LoginView(parameters);
+		case listView:
+			return null;
+		case editView:
+			return new EditView(parameters);
+		default:
+			return null;
+		}
 	}
+	
 }
