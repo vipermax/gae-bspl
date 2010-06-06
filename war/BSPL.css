@@ -1,38 +1,128 @@
-/** Add css rules here for your application. */
+body {
+}
 
-
-/** Example rules used by the template application (remove for your app) */
 h1 {
-  font-size: 2em;
-  font-weight: bold;
-  color: #777777;
-  margin: 40px 0px 70px;
-  text-align: center;
+	font-size: 20px;
+	font-weight: bold;
+	color: #777777;
+	text-align: left;
+	margin: 0 0 5px 5px;
 }
 
-.sendButton {
-  display: block;
-  font-size: 16pt;
+div#infoArea {
+	margin: 10px;
 }
 
-/** Most GWT widgets already have a style name defined */
-.gwt-DialogBox {
-  width: 400px;
+div#mainArea {
+	margin: 10px;
 }
 
-.dialogVPanel {
-  margin: 5px;
+table {
+	border-collapse: collapse;
 }
 
-.serverResponseLabelError {
-  color: red;
+.blockTable {
+	margin-left: 20px;
+	margin-right: 20px;
 }
 
-/** Set ids using widget.getElement().setId("idOfElement") */
-#closeButton {
-  margin: 15px 6px 6px;
+.mainTable td{
+	vertical-align: top;
 }
 
-canvas {
+td input[type="text"][disabled] {
+	background-color: white;
+	border: 1px solid white;
+}
+td input[type="text"][disabled]:hover {
+	background-color: white;
+	border: 1px solid white;
+}
+
+td input[type="text"][disabled]:focus {
+	background-color: white;
+	border: 1px solid white;
+}
+
+td input[type="text"] {
+	background-color: #ffffdd;
+	border: 1px solid #ffffdd;
+}
+
+td input[type="text"]:hover {
+	background-color: #ffaa00;
+	border: 1px solid white;
+}
+
+td input[type="text"]:focus {
+	background-color: #ffaa00;
+	border: 1px solid red;
+}
+
+.cellNumber {
+	text-align: right;
+}
+
+.cellNumber input {
+	text-align: right;
+}
+
+.bsRowLevel0 {
+}
+
+.bsCellLevel0 {
+	border-bottom: 4px solid #6678B1;
+	color: black;
+	font-size: 14px;
+	font-weight: bold;
+	padding-top: 10px;
+}
+
+.bsCellLevel0 input {
+	color: black;
+	font-size: 16px;
+	font-weight: bold;
+	padding: 0;
+}
+
+.bsRowLevel1 {
+}
+
+.bsCellLevel1 {
+	border-bottom: 2px solid #6678B1;
+	color: black;
+	font-size: 14px;
+	font-weight: normal;
+	padding-top: 5px;
+	padding-left: 10px;
+}
+
+.bsCellLevel1 input {
+	color: black;
+	font-size: 14px;
+	font-weight: normal;
+	padding: 0;
+}
+
+.bsRowLevelNormal {
+}
+
+.bsCellLevelNormal {
+	border-bottom: 1px solid #87CEFA;
+	color: black;
+	font-size: 12px;
+	font-weight: normal;
+	padding-left: 20px;
+}
+
+.bsCellLevelNormal input {
+	color: black;
+	font-size: 12px;
+	font-weight: normal;
+	padding: 0;
+}
+
+
+svg {
 	border: 1px solid black;
 }

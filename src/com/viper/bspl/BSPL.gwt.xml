@@ -12,6 +12,7 @@
 
   <!-- Other module inherits                                      -->
   <inherits name='com.google.gwt.widgetideas.GWTCanvas'/>
+  <inherits name='org.vaadin.gwtgraphics.GWTGraphics'/>
 
   <!-- Specify the app entry point class.                         -->
   <entry-point class='com.viper.bspl.client.BSPL'/>

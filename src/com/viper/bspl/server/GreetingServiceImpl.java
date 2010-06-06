@@ -1,8 +1,8 @@
 package com.viper.bspl.server;
 
+import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.viper.bspl.client.GreetingService;
 import com.viper.bspl.shared.FieldVerifier;
-import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 /**
  * The server side implementation of the RPC service.

@@ -1,57 +1,67 @@
 package com.viper.bspl.client;
 
-import com.google.gwt.dom.client.Style.Unit;
-import com.google.gwt.user.client.ui.FlexTable;
-import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.LayoutPanel;
-import com.google.gwt.user.client.ui.SplitLayoutPanel;
+import org.vaadin.gwtgraphics.client.DrawingArea;
+
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.widgetideas.graphics.client.Color;
-import com.google.gwt.widgetideas.graphics.client.GWTCanvas;
+import com.viper.bspl.client.data.BSStatement;
+import com.viper.bspl.client.data.Statement;
+import com.viper.bspl.client.graphic.BSArea;
+import com.viper.bspl.client.vc.StatementVC;
 
 public class BSTab extends BaseTab {
 
-	private VerticalPanel mainPanel = new VerticalPanel();
+	Statement state = BSStatement.getBlankStatement();
+	StatementVC stateVC = new StatementVC(state);
 	
 	@Override
 	void init() {
 
-		// canvas widget
-		GWTCanvas canvas = new GWTCanvas(400, 400);
-		canvas.setLineWidth(1);
-		canvas.setStrokeStyle(Color.GREEN);
-
-		canvas.beginPath();
-		canvas.moveTo(1, 1);
-		canvas.lineTo(1, 50);
-		canvas.lineTo(50, 50);
-		canvas.lineTo(50, 1);
-		canvas.closePath();
-		canvas.stroke();
-	    
-		// data area
-		FlexTable dataTable = new FlexTable();
-		FlowPanel leftPanel = new FlowPanel();
-		FlowPanel rightPanel = new FlowPanel();
-		dataTable.setWidget(0, 0, leftPanel);
-		dataTable.setWidget(0, 1, rightPanel);
+		// preview button
+		Button prevButton = new Button("プレビュー");
+		prevButton.addClickHandler(new ClickHandler() {
+			@Override
+			public void onClick(ClickEvent event) {
+				preview();
+			}
+		});
 		
-		// make tables
-		Block b1= new Block(new Item("流動資産", 0, true));
-		Block b2= new Block(new Item("固定資産", 0, true));
-		leftPanel.add(b1.getBlockTable());
-		leftPanel.add(b2.getBlockTable());
-		
-		Block b3= new Block(new Item("流動負債", 0, true));
-		Block b4= new Block(new Item("固定負債", 0, true));
-		Block b5= new Block(new Item("資本金", 0, true));
-		rightPanel.add(b3.getBlockTable());
-		rightPanel.add(b4.getBlockTable());
-		rightPanel.add(b5.getBlockTable());
-		
-		fp.add(dataTable);
-		fp.add(canvas);
+		fp.add(stateVC.getDataTable());
+		fp.add(prevButton);
 	}
 	
+	private void preview() {
+		stateVC.collectDataFromInput();
+		
+		// popup window
+		int width = (int) (Window.getClientWidth() * 0.8);
+		int height = (int) (Window.getClientHeight() * 0.8);
+		DrawingArea popCanvas = new DrawingArea(width, height);
+		BSArea bsGraphic = new BSArea(popCanvas, state);
+		bsGraphic.reDraw();
+		
+		final PopupPanel popup = new PopupPanel(false, true);
+		popup.addStyleName("popup");
+		VerticalPanel popupContent = new VerticalPanel();
+		popupContent.add(popCanvas);
+		Button closeBtn = new Button("閉じる");
+		closeBtn.addClickHandler(new ClickHandler() {
+			@Override
+			public void onClick(ClickEvent event) {
+				popup.hide();
+			}
+		});
+		popupContent.add(closeBtn);
+		popup.add(popupContent);
+		popup.center();
+	}
+	
+	public Statement getStatementData() {
+		stateVC.collectDataFromInput();
+		return state;
+	}
 }
