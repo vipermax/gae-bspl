@@ -8,21 +8,22 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
-import com.viper.bspl.client.data.BSStatement;
+import com.viper.bspl.client.data.PLStatement;
 import com.viper.bspl.client.data.Statement;
 import com.viper.bspl.client.graphic.SingleGraph;
 import com.viper.bspl.client.vc.StatementVC;
 
-public class BSTab extends BaseTab {
+public class PLTab extends BaseTab {
 
-	Statement state = BSStatement.getBlankStatement();
+	Statement state = PLStatement.getBlankStatement();
 	StatementVC stateVC = new StatementVC(state);
 	
 	@Override
-	public void init() {
+	public
+	void init() {
 
 		// preview button
-		Button prevButton = new Button("BSプレビュー");
+		Button prevButton = new Button("PLプレビュー");
 		prevButton.addStyleName("btnPreview");
 		prevButton.addClickHandler(new ClickHandler() {
 			@Override
@@ -42,9 +43,9 @@ public class BSTab extends BaseTab {
 		int width = (int) (Window.getClientWidth() * 0.8);
 		int height = (int) (Window.getClientHeight() * 0.8);
 		DrawingArea popCanvas = new DrawingArea(width, height);
-		SingleGraph bsGraphic = new SingleGraph(popCanvas, state);
-		bsGraphic.setTitle("貸借対照表");
-		bsGraphic.reDraw();
+		SingleGraph plGraphic = new SingleGraph(popCanvas, state);
+		plGraphic.setTitle("損益計算書");
+		plGraphic.reDraw();
 		
 		final PopupPanel popup = new PopupPanel();
 		popup.addStyleName("popup");

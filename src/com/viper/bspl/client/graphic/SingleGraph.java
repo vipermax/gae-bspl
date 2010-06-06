@@ -9,15 +9,16 @@ import com.viper.bspl.client.data.Item;
 import com.viper.bspl.client.data.Statement;
 import com.viper.bspl.client.vc.TextUtil;
 
-public class BSArea extends BaseGraphic {
+public class SingleGraph extends BaseGraph {
 
+	int FONT_SIZE_TITLE = 16;
 	int FONT_SIZE_BLOCK_NAME = 16;
 	int FONT_SIZE_NAME = 12;
 	int FONT_SIZE_NUMBER = 8;
 	
 	public Statement state = null;
 	
-	public BSArea(DrawingArea canvas, Statement state) {
+	public SingleGraph(DrawingArea canvas, Statement state) {
 		super(canvas);
 		this.state = state;
 	}
@@ -43,8 +44,19 @@ public class BSArea extends BaseGraphic {
 		FONT_SIZE_NAME = (int) (FONT_SIZE_NAME * fontRate);
 		FONT_SIZE_NUMBER = (int) (FONT_SIZE_NUMBER * fontRate);
 		
+		// drawTitle
+		drawTitle();
+		
 		// drawStatement
 		drawStatement();
+	}
+	
+	private void drawTitle() {
+		// title
+		int titleTextY = drawArea.start.Y - FONT_SIZE_TITLE;
+		int centerX = (drawArea.start.X + drawArea.end.X) / 2;
+		Text titleText = TextUtil.generateText(centerX, titleTextY, title, FONT_SIZE_TITLE, "black");
+		canvas.add(titleText);
 	}
 	
 	private void drawStatement() {

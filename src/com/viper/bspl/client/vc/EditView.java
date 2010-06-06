@@ -3,22 +3,27 @@ package com.viper.bspl.client.vc;
 import java.util.Date;
 import java.util.Map;
 
+import com.google.gwt.event.logical.shared.SelectionEvent;
+import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.DecoratedTabPanel;
-import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.InlineHTML;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.TextBox;
 import com.viper.bspl.client.BSPL;
 import com.viper.bspl.client.BSTab;
+import com.viper.bspl.client.PLTab;
 import com.viper.bspl.client.ProductInfo;
+import com.viper.bspl.client.ResultTab;
 
 public class EditView extends BaseView {
 
+	public static TextBox companyNameText = new TextBox();;
+	public static ListBox yearList = new ListBox();;
+	
 	public EditView(Map<String, String> parameters) {
 		super(parameters);
 	}
@@ -66,9 +71,9 @@ public class EditView extends BaseView {
 		FlowPanel infoArea = new FlowPanel();
 		infoArea.addStyleName("infoArea");
 		infoArea.add(new InlineLabel("会社名:"));
-		infoArea.add(new TextBox());
+		infoArea.add(companyNameText);
 		infoArea.add(new InlineLabel("年度:"));
-		ListBox yearList = new ListBox();
+		yearList = new ListBox();
 		yearList.addItem("", "-1");
 		int currentYear = Integer.parseInt(DateTimeFormat.getFormat("yyyy").format(new Date()));
 		for(int i = 1970; i < currentYear + 5; i++) {
@@ -86,15 +91,47 @@ public class EditView extends BaseView {
 		
 		DecoratedTabPanel mainTab = new DecoratedTabPanel();
 		
-		BSTab bsTab = new BSTab();
+		// bs tab
+		final BSTab bsTab = new BSTab();
 		bsTab.init();
 		
 		mainTab.add(bsTab.getContent(), "BS");
-		mainTab.add(new HTML("<h2>この機能は開発中です。</h2>"), "PL");
-		mainTab.add(new HTML("<h2>この機能は開発中です。</h2>"), "比例図（結果）");
+		
+		// pl tab
+		final PLTab plTab = new PLTab();
+		plTab.init();
+
+		mainTab.add(plTab.getContent(), "PL");
+		
+		// result tab
+		final ResultTab resultTab = new ResultTab();
+		resultTab.init();
+		
+		mainTab.add(resultTab.getContent(), "比例図（結果）");
+		
+//		mainTab.add(new HTML("<h2>この機能は開発中です。</h2>"), "比例図（結果）");
 
 		mainTab.setWidth("100%");
 		mainTab.selectTab(0);
+		
+		// tab click event
+		mainTab.addSelectionHandler(new SelectionHandler<Integer>() {
+			@Override
+			public void onSelection(SelectionEvent<Integer> event) {
+				if((int)(event.getSelectedItem()) == 2) {
+					resultTab.setCompanyName(companyNameText.getText());
+					int selectedIndex = yearList.getSelectedIndex();
+					if(selectedIndex > 0) {
+						resultTab.setYear(yearList.getValue(selectedIndex));
+					} else {
+						resultTab.setYear("");
+					}
+					resultTab.setBsState(bsTab.getStatementData());
+					resultTab.setPlState(plTab.getStatementData());
+					resultTab.reDraw();
+				}
+			}
+		});
 		
 		mainArea.add(mainTab);
 		this.add(mainArea);

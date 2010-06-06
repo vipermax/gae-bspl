@@ -3,13 +3,10 @@ package com.viper.bspl.client.vc;
 import java.util.Map;
 
 import com.google.gwt.user.client.ui.Anchor;
-import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
-import com.google.gwt.user.client.ui.VerticalPanel;
 import com.viper.bspl.client.ProductInfo;
 
 public class LoginView extends BaseView {
