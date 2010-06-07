@@ -67,7 +67,7 @@ public class PLTab extends BaseTab {
 		popup.center();
 	}
 	
-	public Statement getStatementData() {
+	public Statement getStatement() {
 		stateVC.collectDataFromInput();
 		return state;
 	}

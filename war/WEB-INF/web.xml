@@ -10,10 +10,18 @@
     <servlet-name>loginService</servlet-name>
     <servlet-class>com.viper.bspl.server.LoginServiceImpl</servlet-class>
   </servlet>
+  <servlet>
+    <servlet-name>dataService</servlet-name>
+    <servlet-class>com.viper.bspl.server.DataServiceImpl</servlet-class>
+  </servlet>
   
   <servlet-mapping>
     <servlet-name>loginService</servlet-name>
     <url-pattern>/bspl/login</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>dataService</servlet-name>
+    <url-pattern>/bspl/data</url-pattern>
   </servlet-mapping>
   
   <!-- Default page to serve -->

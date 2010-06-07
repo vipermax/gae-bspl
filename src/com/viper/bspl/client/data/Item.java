@@ -2,7 +2,11 @@ package com.viper.bspl.client.data;
 
 import java.util.ArrayList;
 
-public class Item {
+import com.google.gwt.xml.client.Document;
+import com.google.gwt.xml.client.Element;
+import com.google.gwt.xml.client.NodeList;
+
+public class Item implements XMLSerializable {
 	
 	public enum MODE {
 		BLOCK_HEADER,
@@ -77,6 +81,35 @@ public class Item {
 			ret = ret + child.toString();
 		}
 		return ret;
+	}
+
+	@Override
+	public void parseFromXML(Element elem) {
+		name = elem.getAttribute("name");
+		amount = Float.parseFloat(elem.getAttribute("amount"));
+		isAutoCalulate = Boolean.parseBoolean(elem.getAttribute("isAutoCalulate"));
+		
+		children = new ArrayList<Item>();
+		NodeList leftChildren = elem.getElementsByTagName("Item");
+		for(int i = 0; i < leftChildren.getLength(); i++) {
+			Element childElem = (Element) leftChildren.item(i);
+			Item item = new Item();
+			item.parseFromXML(childElem);
+			children.add(item);
+		}
+
+	}
+
+	@Override
+	public Element serializeToXML(Document document) {
+		Element retElem = document.createElement("Item");
+		retElem.setAttribute("name", name);
+		retElem.setAttribute("amount", Float.toString(amount));
+		retElem.setAttribute("isAutoCalulate", Boolean.toString(isAutoCalulate));
+		for(Item child: children) {
+			retElem.appendChild(child.serializeToXML(document));
+		}
+		return retElem;
 	}
 	
 }

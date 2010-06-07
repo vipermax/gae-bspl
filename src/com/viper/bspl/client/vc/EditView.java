@@ -3,10 +3,15 @@ package com.viper.bspl.client.vc;
 import java.util.Date;
 import java.util.Map;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Anchor;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DecoratedTabPanel;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.InlineHTML;
@@ -15,14 +20,25 @@ import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.TextBox;
 import com.viper.bspl.client.BSPL;
 import com.viper.bspl.client.BSTab;
+import com.viper.bspl.client.LoginInfo;
 import com.viper.bspl.client.PLTab;
 import com.viper.bspl.client.ProductInfo;
 import com.viper.bspl.client.ResultTab;
+import com.viper.bspl.client.YearReport;
+import com.viper.bspl.client.YearReportSummary;
+import com.viper.bspl.client.data.BSPLPairContainer;
+import com.viper.bspl.client.rpc.ServiceResponse;
 
 public class EditView extends BaseView {
 
 	public static TextBox companyNameText = new TextBox();;
 	public static ListBox yearList = new ListBox();;
+	
+	FlowPanel mainArea = new FlowPanel();
+	DecoratedTabPanel mainTab = new DecoratedTabPanel();
+	final BSTab bsTab = new BSTab();
+	final PLTab plTab = new PLTab();
+	final ResultTab resultTab = new ResultTab();
 	
 	public EditView(Map<String, String> parameters) {
 		super(parameters);
@@ -54,7 +70,6 @@ public class EditView extends BaseView {
 		
 		header.add(headerLine);
 		header.addStyleName("headerArea");
-		header.add(new InlineHTML("<h1>BS、PL比例図（単年度）</h1>"));
 		this.add(header);
 	}
 	
@@ -67,9 +82,58 @@ public class EditView extends BaseView {
 	}
 	
 	private void loadInfoArea() {
+		
 		// infomation area
 		FlowPanel infoArea = new FlowPanel();
 		infoArea.addStyleName("infoArea");
+
+		infoArea.add(new InlineHTML("<h1>BS、PL比例図（単年度）</h1>"));
+
+		// save button
+		Button saveBtn = new Button("保存");
+		saveBtn.addClickHandler(new ClickHandler() {
+			@Override
+			public void onClick(ClickEvent event) {
+				YearReportSummary summary = new YearReportSummary();
+				summary.setCompanyName(companyNameText.getText());
+				int selectedIndex = yearList.getSelectedIndex();
+				if(selectedIndex > 0) {
+					summary.setYear(yearList.getValue(selectedIndex));
+				} else {
+					summary.setYear("");
+				}
+				Date nowDate = new Date();
+				summary.setCreateDate(nowDate);
+				summary.setLastUpdate(nowDate);
+				LoginInfo loginInfo = BSPL.getLoginInfo();
+				summary.setCreatorNickname(loginInfo.getNickname());
+				summary.setCreatorEmail(loginInfo.getEmailAddress());
+
+				YearReport yearReport = new YearReport();
+				yearReport.setSummary(summary);
+				
+				// generate xml
+				BSPLPairContainer container = new BSPLPairContainer();
+				container.setBsState(bsTab.getStatement());
+				container.setPlState(plTab.getStatement());
+
+				yearReport.setXmlData(container.serializeToXMLString());
+				
+				BSPL.getDataService().addOrUpdateYearReport(yearReport, new AsyncCallback<ServiceResponse>() {
+					@Override
+					public void onFailure(Throwable caught) {
+						Window.alert("保存失敗しました。");
+					}
+					@Override
+					public void onSuccess(ServiceResponse result) {
+						Window.alert("データをサーバーに保存しました。");
+					}
+				});
+			}
+		});
+
+		infoArea.add(saveBtn);
+		
 		infoArea.add(new InlineLabel("会社名:"));
 		infoArea.add(companyNameText);
 		infoArea.add(new InlineLabel("年度:"));
@@ -86,31 +150,24 @@ public class EditView extends BaseView {
 	
 	private void loadMainArea() {
 		// main area
-		FlowPanel mainArea = new FlowPanel();
 		mainArea.addStyleName("mainArea");
 		
-		DecoratedTabPanel mainTab = new DecoratedTabPanel();
 		
 		// bs tab
-		final BSTab bsTab = new BSTab();
 		bsTab.init();
 		
 		mainTab.add(bsTab.getContent(), "BS");
 		
 		// pl tab
-		final PLTab plTab = new PLTab();
 		plTab.init();
 
 		mainTab.add(plTab.getContent(), "PL");
 		
 		// result tab
-		final ResultTab resultTab = new ResultTab();
 		resultTab.init();
 		
 		mainTab.add(resultTab.getContent(), "比例図（結果）");
 		
-//		mainTab.add(new HTML("<h2>この機能は開発中です。</h2>"), "比例図（結果）");
-
 		mainTab.setWidth("100%");
 		mainTab.selectTab(0);
 		
@@ -126,8 +183,8 @@ public class EditView extends BaseView {
 					} else {
 						resultTab.setYear("");
 					}
-					resultTab.setBsState(bsTab.getStatementData());
-					resultTab.setPlState(plTab.getStatementData());
+					resultTab.setBsState(bsTab.getStatement());
+					resultTab.setPlState(plTab.getStatement());
 					resultTab.reDraw();
 				}
 			}

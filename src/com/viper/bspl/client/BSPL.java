@@ -7,7 +7,10 @@ import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.RootPanel;
+import com.viper.bspl.client.rpc.DataService;
+import com.viper.bspl.client.rpc.DataServiceAsync;
 import com.viper.bspl.client.vc.BaseView;
+import com.viper.bspl.client.vc.DashBoardView;
 import com.viper.bspl.client.vc.EditView;
 import com.viper.bspl.client.vc.LoginView;
 
@@ -25,6 +28,7 @@ public class BSPL implements EntryPoint {
 	BaseView currentView = null;
 	
 	static private LoginInfo loginInfo = null;
+	static private DataServiceAsync dataService = GWT.create(DataService.class);
 	
 	@Override
 	public void onModuleLoad() {
@@ -37,7 +41,8 @@ public class BSPL implements EntryPoint {
 				loginInfo = result;
 				if(loginInfo.isLoggedIn()) {
 					Map<String, String> params = new HashMap<String, String>();
-					switchView(VIEW_TYPE.editView, params);
+//					switchView(VIEW_TYPE.editView, params);
+					switchView(VIEW_TYPE.listView, params);
 				} else {
 					Map<String, String> params = new HashMap<String, String>();
 					params.put(LoginView.PARAM_LOGINURL, loginInfo.getLoginUrl());
@@ -53,6 +58,10 @@ public class BSPL implements EntryPoint {
 	
 	static public LoginInfo getLoginInfo() {
 		return loginInfo;
+	}
+	
+	static public DataServiceAsync getDataService() {
+		return dataService;
 	}
 
 	public void switchView(VIEW_TYPE type, Map<String, String> parameters) {
@@ -80,7 +89,7 @@ public class BSPL implements EntryPoint {
 		case loginView:
 			return new LoginView(parameters);
 		case listView:
-			return null;
+			return new DashBoardView(parameters);
 		case editView:
 			return new EditView(parameters);
 		default:
