@@ -202,3 +202,13 @@ td input[type="text"]:focus {
 svg {
 	border: 1px solid black;
 }
+
+div.caution {
+	display: block;
+	width: 520px;
+	padding: 0 15px;
+	margin: 10px 0;
+	background-color: #efefef;
+	border-top: 1px solid #ffcc33;
+	border-bottom: 1px solid #ffcc33;
+}

@@ -104,6 +104,11 @@ public class DashBoardView extends BaseView {
 		
 		listPanel.add(table);
 
+		listPanel.add(new InlineHTML("<div class=\"caution\">" +
+				"<p>注意：このサイトは皆さんが作成した比例縮尺図を共有するためのサイトであります。<br/>" +
+				"基本的、個人作ったデータは、後ほど全ユーザーに公開することを予定しています。<br/>" +
+				"御了承ください。</p></div>"));
+		
 		mainPanel.add(listPanel);
 		
 		this.add(mainPanel);

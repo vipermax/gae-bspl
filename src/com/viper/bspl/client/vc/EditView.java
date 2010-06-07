@@ -99,7 +99,7 @@ public class EditView extends BaseView {
 		FlowPanel infoArea = new FlowPanel();
 		infoArea.addStyleName("infoArea");
 
-		infoArea.add(new InlineHTML("<h1>BS、PL比例図（単年度）</h1>"));
+		infoArea.add(new InlineHTML("<h1>BS、PL比例縮尺図（単年度）</h1>"));
 
 		// returnto list button
 		Button returnBtn = new Button("<<一覧へ戻る");
@@ -221,7 +221,7 @@ public class EditView extends BaseView {
 		// result tab
 		resultTab.init();
 		
-		mainTab.add(resultTab.getContent(), "比例図（結果）");
+		mainTab.add(resultTab.getContent(), "比例縮尺図（結果）");
 		
 		mainTab.setWidth("100%");
 		mainTab.selectTab(0);

@@ -22,7 +22,7 @@ public class LoginView extends BaseView {
 		FlowPanel loginPanel = new FlowPanel();
 		Anchor signInLink = new Anchor("ログインページへ");
 		signInLink.setHref((String) parameters.get(PARAM_LOGINURL));
-		Label titleLabel = new Label("BS、PL比例図 (" + ProductInfo.version + ")");
+		Label titleLabel = new Label("BS、PL比例縮尺図 (" + ProductInfo.version + ")");
 		titleLabel.addStyleName("loginTitle");
 		loginPanel.add(titleLabel);
 		loginPanel.add(new HTML("<br/>"));
