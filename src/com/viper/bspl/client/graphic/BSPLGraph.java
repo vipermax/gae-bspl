@@ -61,12 +61,14 @@ public class BSPLGraph extends BaseGraph {
 		// draw BS
 		SingleGraph bsGraphic = new SingleGraph(canvas, bsState);
 		bsGraphic.setArea(new Area(new Point(0, headerHeight), new Point(canvas.getWidth()/2, canvas.getHeight())));
+		bsGraphic.setGraphTotal(Math.max(bsState.getTotal(), plState.getTotal()));
 		bsGraphic.setTitle("貸借対照表");
 		bsGraphic.reDraw();
 		
 		// draw PL
 		SingleGraph plGraphic = new SingleGraph(canvas, plState);
 		plGraphic.setArea(new Area(new Point(canvas.getWidth()/2, headerHeight), new Point(canvas.getWidth(), canvas.getHeight())));
+		plGraphic.setGraphTotal(Math.max(bsState.getTotal(), plState.getTotal()));
 		plGraphic.setTitle("損益計算書");
 		plGraphic.reDraw();
 		

@@ -27,7 +27,16 @@ public class SingleGraph extends BaseGraph {
 	double hwRate = 1.5f;
 	double heightScale = 1f;
 	int wide = 100;
-	float total;
+	float graphTotal = 0f;
+	float selfTotal;
+	
+	public float getGraphTotal() {
+		return graphTotal;
+	}
+
+	public void setGraphTotal(float graphTotal) {
+		this.graphTotal = graphTotal;
+	}
 	
 	@Override
 	public void reDraw() {
@@ -35,9 +44,12 @@ public class SingleGraph extends BaseGraph {
 		// drawing area
 		drawArea = getDrawingArea();
 		
-		total = Math.max(state.getLeftTotal(), state.getRightTotal());
-		heightScale = (double)drawArea.getHeight() / total;
-		wide = (int) (total * heightScale * 0.3);
+		selfTotal = state.getTotal();
+		if(0 == graphTotal) {
+			graphTotal = Math.max(state.getLeftTotal(), state.getRightTotal());
+		}
+		heightScale = (double)drawArea.getHeight() / graphTotal;
+		wide = (int) (graphTotal * heightScale * 0.3);
 		
 		float fontRate = drawArea.getHeight() / 400;
 		FONT_SIZE_BLOCK_NAME = (int) (FONT_SIZE_BLOCK_NAME * fontRate);
@@ -170,7 +182,7 @@ public class SingleGraph extends BaseGraph {
 					numberString += " ";
 				}
 				if(showPercent) {
-					numberString += "(" + fmPercent.format(item.getAmount() / total * 100) + "%)";
+					numberString += "(" + fmPercent.format(item.getAmount() / selfTotal * 100) + "%)";
 				}
 				
 				int numberTextY = start.Y + (int) (item.getAmount() * heightScale) / 2 + FONT_SIZE_NUMBER / 2;

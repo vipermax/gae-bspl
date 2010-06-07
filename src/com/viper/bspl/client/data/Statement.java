@@ -52,4 +52,8 @@ public class Statement {
 		}
 		return sum;
 	}
+	
+	public float getTotal() {
+		return Math.max(getLeftTotal(), getRightTotal());
+	}
 }
