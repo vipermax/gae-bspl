@@ -26,14 +26,17 @@ public class DataServiceImpl extends RemoteServiceServlet implements
 	private static final PersistenceManagerFactory PMF = JDOHelper.getPersistenceManagerFactory("transactions-optional");
 
 	@Override
-	public ServiceResponse addOrUpdateYearReport(YearReport yearReport)
+	public String addOrUpdateYearReport(YearReport yearReport)
 			throws NotLoggedInException {
 		checkLoggedIn();
 		PersistenceManager pm = getPersistenceManager();
+		String id = Long.toString(yearReport.getSummary().getId());
 		try {
 			if(0 == yearReport.getSummary().getId()) {
 				// insert
-				pm.makePersistent(convert(yearReport));
+				DBInnerYearReport dbReport = convert(yearReport);
+				pm.makePersistent(dbReport);
+				id = Long.toString(dbReport.getId());
 			} else {
 				// update
 				Query query = pm.newQuery(DBInnerYearReport.class, "id==" + yearReport.getSummary().getId());
@@ -50,9 +53,7 @@ public class DataServiceImpl extends RemoteServiceServlet implements
 		} finally {
 			pm.close();
 		}
-		ServiceResponse respo = new ServiceResponse();
-		respo.setSuccess(true);
-		return respo;
+		return id;
 	}
 
 	@Override
@@ -80,6 +81,7 @@ public class DataServiceImpl extends RemoteServiceServlet implements
 		try {
 			Query query = pm.newQuery(DBInnerYearReport.class, "creatorEmail==email");
 			query.declareParameters("java.lang.String email");
+			query.setOrdering("lastUpdate desc");
 			List<DBInnerYearReport> queryResult = (List<DBInnerYearReport>) query.execute(getUser().getEmail());
 			ArrayList<YearReportSummary> summaryList = new ArrayList<YearReportSummary>();
 			for(DBInnerYearReport dbReport : queryResult) {

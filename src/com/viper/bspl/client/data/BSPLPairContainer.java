@@ -27,15 +27,17 @@ public class BSPLPairContainer implements XMLSerializable {
 	public void parseFromXML(Element elem) {
 		bsState = new BSStatement();
 		plState = new PLStatement();
-		if(elem.getNodeName() == "BSPLPair") {
-			NodeList children = elem.getElementsByTagName("Statement");
+		if(elem.getNodeName().equals("BSPLPair")) {
+			NodeList children = elem.getChildNodes();
 			for(int i = 0; i < children.getLength(); i++) {
 				Element child = (Element) children.item(i);
-				String type = child.getAttribute("type");
-				if(type == "BS") {
-					bsState.parseFromXML(child);
-				} else if(type == "PL") {
-					plState.parseFromXML(child);
+					if(child.getNodeName().equals("Statement")) {
+					String type = child.getAttribute("type");
+					if(type.equals("BS")) {
+						bsState.parseFromXML(child);
+					} else if(type.equals("PL")) {
+						plState.parseFromXML(child);
+					}
 				}
 			}
 		}

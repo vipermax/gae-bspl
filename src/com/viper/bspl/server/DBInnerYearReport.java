@@ -2,7 +2,11 @@ package com.viper.bspl.server;
 
 import java.util.Date;
 
-import javax.jdo.annotations.*;
+import javax.jdo.annotations.IdGeneratorStrategy;
+import javax.jdo.annotations.IdentityType;
+import javax.jdo.annotations.PersistenceCapable;
+import javax.jdo.annotations.Persistent;
+import javax.jdo.annotations.PrimaryKey;
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
 public class DBInnerYearReport {
@@ -64,7 +68,7 @@ public class DBInnerYearReport {
 		this.lastUpdate = lastUpdate;
 	}
 	public String getXmlData() {
-		return xmlData.toString();
+		return xmlData.getValue();
 	}
 	public void setXmlData(String xmlData) {
 		this.xmlData = new com.google.appengine.api.datastore.Text(xmlData);

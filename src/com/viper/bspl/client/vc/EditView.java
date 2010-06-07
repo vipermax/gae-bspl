@@ -1,6 +1,7 @@
 package com.viper.bspl.client.vc;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -18,6 +19,8 @@ import com.google.gwt.user.client.ui.InlineHTML;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.xml.client.Document;
+import com.google.gwt.xml.client.XMLParser;
 import com.viper.bspl.client.BSPL;
 import com.viper.bspl.client.BSTab;
 import com.viper.bspl.client.LoginInfo;
@@ -26,12 +29,15 @@ import com.viper.bspl.client.ProductInfo;
 import com.viper.bspl.client.ResultTab;
 import com.viper.bspl.client.YearReport;
 import com.viper.bspl.client.YearReportSummary;
+import com.viper.bspl.client.BSPL.VIEW_TYPE;
 import com.viper.bspl.client.data.BSPLPairContainer;
 import com.viper.bspl.client.rpc.ServiceResponse;
 
 public class EditView extends BaseView {
 
-	public static TextBox companyNameText = new TextBox();;
+	YearReport yearReport = new YearReport();
+	
+	public static TextBox companyNameText = new TextBox();
 	public static ListBox yearList = new ListBox();;
 	
 	FlowPanel mainArea = new FlowPanel();
@@ -42,6 +48,12 @@ public class EditView extends BaseView {
 	
 	public EditView(Map<String, String> parameters) {
 		super(parameters);
+		companyNameText.setText("");
+		yearList.setSelectedIndex(0);
+	}
+
+	public void setYearReport(YearReport yearReport) {
+		this.yearReport = yearReport;
 	}
 
 	@Override
@@ -89,19 +101,39 @@ public class EditView extends BaseView {
 
 		infoArea.add(new InlineHTML("<h1>BS、PL比例図（単年度）</h1>"));
 
+		// returnto list button
+		Button returnBtn = new Button("<<一覧へ戻る");
+		returnBtn.addClickHandler(new ClickHandler() {
+			@Override
+			public void onClick(ClickEvent event) {
+				Map<String, String> params = new HashMap<String, String>();
+				BSPL.switchView(VIEW_TYPE.listView, params);
+			}
+		});
+		infoArea.add(returnBtn);
+		
+		infoArea.add(new InlineHTML("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"));
+		
 		// save button
 		Button saveBtn = new Button("保存");
 		saveBtn.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
-				YearReportSummary summary = new YearReportSummary();
-				summary.setCompanyName(companyNameText.getText());
+				
+				YearReportSummary summary = yearReport.getSummary();
+				summary.setCompanyName(companyNameText.getText().trim());
 				int selectedIndex = yearList.getSelectedIndex();
 				if(selectedIndex > 0) {
 					summary.setYear(yearList.getValue(selectedIndex));
 				} else {
 					summary.setYear("");
 				}
+				
+				if(summary.getCompanyName().isEmpty() || summary.getYear().isEmpty()) {
+					Window.alert("[会社名]と[年度]を入力してください。");
+					return;
+				}
+				
 				Date nowDate = new Date();
 				summary.setCreateDate(nowDate);
 				summary.setLastUpdate(nowDate);
@@ -109,7 +141,6 @@ public class EditView extends BaseView {
 				summary.setCreatorNickname(loginInfo.getNickname());
 				summary.setCreatorEmail(loginInfo.getEmailAddress());
 
-				YearReport yearReport = new YearReport();
 				yearReport.setSummary(summary);
 				
 				// generate xml
@@ -119,13 +150,14 @@ public class EditView extends BaseView {
 
 				yearReport.setXmlData(container.serializeToXMLString());
 				
-				BSPL.getDataService().addOrUpdateYearReport(yearReport, new AsyncCallback<ServiceResponse>() {
+				BSPL.getDataService().addOrUpdateYearReport(yearReport, new AsyncCallback<String>() {
 					@Override
 					public void onFailure(Throwable caught) {
 						Window.alert("保存失敗しました。");
 					}
 					@Override
-					public void onSuccess(ServiceResponse result) {
+					public void onSuccess(String result) {
+						yearReport.getSummary().setId(Long.parseLong(result));
 						Window.alert("データをサーバーに保存しました。");
 					}
 				});
@@ -134,14 +166,29 @@ public class EditView extends BaseView {
 
 		infoArea.add(saveBtn);
 		
+		infoArea.add(new InlineHTML("<br/>"));
+		
+		// info
 		infoArea.add(new InlineLabel("会社名:"));
+		if(yearReport.getSummary().getId() > 0) {
+			companyNameText.setText(yearReport.getSummary().getCompanyName());
+		}
 		infoArea.add(companyNameText);
+		
 		infoArea.add(new InlineLabel("年度:"));
 		yearList = new ListBox();
 		yearList.addItem("", "-1");
 		int currentYear = Integer.parseInt(DateTimeFormat.getFormat("yyyy").format(new Date()));
 		for(int i = 1970; i < currentYear + 5; i++) {
 			yearList.addItem(Integer.toString(i), Integer.toString(i));
+		}
+		if(yearReport.getSummary().getId() > 0) {
+			for(int i = 0; i < yearList.getItemCount(); i++) {
+				if(yearList.getItemText(i).trim().equals(yearReport.getSummary().getYear().trim())) {
+					yearList.setSelectedIndex(i);
+					break;
+				}
+			}
 		}
 		infoArea.add(yearList);
 		
@@ -152,6 +199,14 @@ public class EditView extends BaseView {
 		// main area
 		mainArea.addStyleName("mainArea");
 		
+		// parse statement data
+		if(yearReport.getSummary().getId() > 0) {
+			BSPLPairContainer container = new BSPLPairContainer();
+			Document document = XMLParser.parse(yearReport.getXmlData());
+			container.parseFromXML(document.getDocumentElement());
+			bsTab.setState(container.getBsState());
+			plTab.setState(container.getPlState());
+		}
 		
 		// bs tab
 		bsTab.init();

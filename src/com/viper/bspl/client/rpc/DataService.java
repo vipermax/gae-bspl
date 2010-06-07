@@ -7,7 +7,7 @@ import com.viper.bspl.client.YearReportSummary;
 
 @RemoteServiceRelativePath("data")
 public interface DataService extends RemoteService {
-	public ServiceResponse addOrUpdateYearReport(YearReport yearReport) throws NotLoggedInException;
+	public String addOrUpdateYearReport(YearReport yearReport) throws NotLoggedInException;
 	public YearReport getYearReport(String id) throws NotLoggedInException;
 	public YearReportSummary[] getReportList() throws NotLoggedInException;
 }

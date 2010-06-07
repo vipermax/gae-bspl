@@ -16,11 +16,17 @@ import com.viper.bspl.client.vc.StatementVC;
 public class BSTab extends BaseTab {
 
 	Statement state = BSStatement.getBlankStatement();
-	StatementVC stateVC = new StatementVC(state);
+	StatementVC stateVC = null;
 	
+	public void setState(Statement state) {
+		this.state = state;
+	}
+
 	@Override
 	public void init() {
 
+		stateVC = new StatementVC(state);
+		
 		// preview button
 		Button prevButton = new Button("BSプレビュー");
 		prevButton.addStyleName("btnPreview");

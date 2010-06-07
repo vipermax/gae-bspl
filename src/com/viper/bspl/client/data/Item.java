@@ -90,12 +90,14 @@ public class Item implements XMLSerializable {
 		isAutoCalulate = Boolean.parseBoolean(elem.getAttribute("isAutoCalulate"));
 		
 		children = new ArrayList<Item>();
-		NodeList leftChildren = elem.getElementsByTagName("Item");
+		NodeList leftChildren = elem.getChildNodes();
 		for(int i = 0; i < leftChildren.getLength(); i++) {
 			Element childElem = (Element) leftChildren.item(i);
-			Item item = new Item();
-			item.parseFromXML(childElem);
-			children.add(item);
+			if(childElem.getNodeName().equals("Item")) {
+				Item item = new Item();
+				item.parseFromXML(childElem);
+				children.add(item);
+			}
 		}
 
 	}

@@ -4,8 +4,8 @@ import java.io.Serializable;
 
 public class YearReport implements Serializable {
 	
-	private YearReportSummary summary;
-	private String xmlData;
+	private YearReportSummary summary = new YearReportSummary();;
+	private String xmlData = "";
 	
 	public YearReportSummary getSummary() {
 		return summary;

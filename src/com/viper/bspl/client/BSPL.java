@@ -25,10 +25,10 @@ public class BSPL implements EntryPoint {
 		editView,
 	}
 	
-	BaseView currentView = null;
+	static BaseView currentView = null;
 	
 	static private LoginInfo loginInfo = null;
-	static private DataServiceAsync dataService = GWT.create(DataService.class);
+	static private DataServiceAsync dataServiceAsync = GWT.create(DataService.class);
 	
 	@Override
 	public void onModuleLoad() {
@@ -41,7 +41,6 @@ public class BSPL implements EntryPoint {
 				loginInfo = result;
 				if(loginInfo.isLoggedIn()) {
 					Map<String, String> params = new HashMap<String, String>();
-//					switchView(VIEW_TYPE.editView, params);
 					switchView(VIEW_TYPE.listView, params);
 				} else {
 					Map<String, String> params = new HashMap<String, String>();
@@ -61,10 +60,10 @@ public class BSPL implements EntryPoint {
 	}
 	
 	static public DataServiceAsync getDataService() {
-		return dataService;
+		return dataServiceAsync;
 	}
 
-	public void switchView(VIEW_TYPE type, Map<String, String> parameters) {
+	static public void switchView(VIEW_TYPE type, Map<String, String> parameters) {
 		
 		// close current view
 		if(null != currentView) {
@@ -79,12 +78,32 @@ public class BSPL implements EntryPoint {
 		// create new view
 		currentView = createNewView(type, parameters);
 		if(null != currentView) {
-			currentView.initView();
-			RootPanel.get("view").add(currentView);
+			
+			String id = "";
+			if(parameters.containsKey("id")) {
+				id = parameters.get("id");
+			}
+			if(VIEW_TYPE.editView == type && !id.isEmpty()) {
+				BSPL.getDataService().getYearReport(id, new AsyncCallback<YearReport>() {
+					@Override
+					public void onFailure(Throwable caught) {
+					}
+					@Override
+					public void onSuccess(YearReport result) {
+						((EditView)currentView).setYearReport(result);
+						currentView.initView();
+						RootPanel.get("view").add(currentView);
+					}
+				});
+			} else {
+				currentView.initView();
+				RootPanel.get("view").add(currentView);
+			}
+			
 		}
 	}
 	
-	private BaseView createNewView(VIEW_TYPE type, Map<String, String> parameters) {
+	private static BaseView createNewView(VIEW_TYPE type, Map<String, String> parameters) {
 		switch (type) {
 		case loginView:
 			return new LoginView(parameters);

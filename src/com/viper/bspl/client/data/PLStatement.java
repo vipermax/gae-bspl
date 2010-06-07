@@ -7,8 +7,8 @@ public class PLStatement extends Statement {
 		super(Type.PL);
 	}
 	
-	static public BSStatement getBlankStatement() {
-		BSStatement state = new BSStatement();
+	static public PLStatement getBlankStatement() {
+		PLStatement state = new PLStatement();
 		
 		Item expense = new Item("費用と利益", 0, true);
 		expense.getChildren().add(new Item("費用", 0, true, 10));

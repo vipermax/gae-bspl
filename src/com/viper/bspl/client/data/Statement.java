@@ -64,30 +64,34 @@ public class Statement implements XMLSerializable {
 	@Override
 	public void parseFromXML(Element elem) {
 		String type = elem.getAttribute("type");
-		if(type == "BS") {
+		if(type.equals("BS")) {
 			this.type = Type.BS;
-		} else if (type == "PL") {
+		} else if (type.equals("PL")) {
 			this.type = Type.PL;
 		}
 		leftPart = new ArrayList<Item>();
 		rightPart = new ArrayList<Item>();
 		
 		Element leftListElem = (Element) elem.getElementsByTagName("LeftList").item(0);
-		NodeList leftChildren = leftListElem.getElementsByTagName("Item");
+		NodeList leftChildren = leftListElem.getChildNodes();
 		for(int i = 0; i < leftChildren.getLength(); i++) {
 			Element childElem = (Element) leftChildren.item(i);
-			Item item = new Item();
-			item.parseFromXML(childElem);
-			leftPart.add(item);
+				if(childElem.getNodeName().equals("Item")) {
+				Item item = new Item();
+				item.parseFromXML(childElem);
+				leftPart.add(item);
+			}
 		}
 
 		Element rightListElem = (Element) elem.getElementsByTagName("RightList").item(0);
-		NodeList rightChildren = rightListElem.getElementsByTagName("Item");
+		NodeList rightChildren = rightListElem.getChildNodes();
 		for(int i = 0; i < rightChildren.getLength(); i++) {
 			Element childElem = (Element) rightChildren.item(i);
-			Item item = new Item();
-			item.parseFromXML(childElem);
-			rightPart.add(item);
+				if(childElem.getNodeName().equals("Item")) {
+				Item item = new Item();
+				item.parseFromXML(childElem);
+				rightPart.add(item);
+			}
 		}
 	}
 
