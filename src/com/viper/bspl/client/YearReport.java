@@ -20,4 +20,26 @@ public class YearReport implements Serializable {
 		this.xmlData = xmlData;
 	}
 	
+	@Override
+	public boolean equals(Object obj) {
+		if(obj != null && obj instanceof YearReport) {
+			if(!this.summary.equals(((YearReport)obj).getSummary())) {
+				return false;
+			}
+			if(!this.xmlData.equals(((YearReport)obj).getXmlData())) {
+				return false;
+			}
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	public YearReport deepClone() {
+		YearReport cloneObj = new YearReport();
+		cloneObj.setSummary(summary.deepClone());
+		cloneObj.setXmlData(xmlData);
+		return cloneObj;
+	}
+	
 }
