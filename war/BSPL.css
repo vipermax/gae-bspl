@@ -183,13 +183,13 @@ td input[type="text"]:focus {
 .listTableDataRowOdd {
 	background-color: white;
 	border-bottom: 1px solid #c5d7fe;
-	text-align: center;
+	text-align: left;
 }
 
 .listTableDataRowEven {
 	background-color: #e9e9e9;
 	border-bottom: 1px solid #c5d7fe;
-	text-align: center;
+	text-align: left;
 }
 
 .listTableDataCell {

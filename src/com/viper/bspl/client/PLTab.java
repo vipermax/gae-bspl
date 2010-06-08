@@ -11,6 +11,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import com.viper.bspl.client.data.PLStatement;
 import com.viper.bspl.client.data.Statement;
 import com.viper.bspl.client.graphic.SingleGraph;
+import com.viper.bspl.client.vc.EditView;
 import com.viper.bspl.client.vc.StatementVC;
 
 public class PLTab extends BaseTab {
@@ -50,6 +51,9 @@ public class PLTab extends BaseTab {
 		int height = (int) (Window.getClientHeight() * 0.8);
 		DrawingArea popCanvas = new DrawingArea(width, height);
 		SingleGraph plGraphic = new SingleGraph(popCanvas, state);
+		plGraphic.setCompanyName(EditView.getCompanyName());
+		plGraphic.setYear(EditView.getYear());
+		plGraphic.setDrawCompanyName(true);
 		plGraphic.setTitle("損益計算書");
 		plGraphic.reDraw();
 		

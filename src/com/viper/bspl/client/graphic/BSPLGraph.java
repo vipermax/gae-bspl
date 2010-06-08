@@ -4,7 +4,8 @@ import org.vaadin.gwtgraphics.client.DrawingArea;
 import org.vaadin.gwtgraphics.client.shape.Text;
 
 import com.viper.bspl.client.data.Statement;
-import com.viper.bspl.client.vc.TextUtil;
+import com.viper.bspl.client.vc.DrawUtil;
+import com.viper.bspl.client.vc.DrawUtil.ALIGN;
 
 public class BSPLGraph extends BaseGraph {
 
@@ -93,7 +94,7 @@ public class BSPLGraph extends BaseGraph {
 		
 		int headerTextY = FONT_SIZE_TITLE;
 		int centerX = canvas.getWidth() / 2;
-		Text headerText = TextUtil.generateText(centerX, headerTextY, text, FONT_SIZE_TITLE, "black");
+		Text headerText = DrawUtil.generateText(centerX, headerTextY, text, FONT_SIZE_TITLE, "black", ALIGN.center);
 		canvas.add(headerText);
 	}
 

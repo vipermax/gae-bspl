@@ -11,6 +11,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import com.viper.bspl.client.data.BSStatement;
 import com.viper.bspl.client.data.Statement;
 import com.viper.bspl.client.graphic.SingleGraph;
+import com.viper.bspl.client.vc.EditView;
 import com.viper.bspl.client.vc.StatementVC;
 
 public class BSTab extends BaseTab {
@@ -49,6 +50,9 @@ public class BSTab extends BaseTab {
 		int height = (int) (Window.getClientHeight() * 0.8);
 		DrawingArea popCanvas = new DrawingArea(width, height);
 		SingleGraph bsGraphic = new SingleGraph(popCanvas, state);
+		bsGraphic.setCompanyName(EditView.getCompanyName());
+		bsGraphic.setYear(EditView.getYear());
+		bsGraphic.setDrawCompanyName(true);
 		bsGraphic.setTitle("貸借対照表");
 		bsGraphic.reDraw();
 		

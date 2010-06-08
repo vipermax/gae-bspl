@@ -65,16 +65,22 @@ public class DashBoardView extends BaseView {
 		table.getCellFormatter().addStyleName(0, 2, "listTableHeadCell");
 		table.getCellFormatter().addStyleName(0, 3, "listTableHeadCell");
 		
+		BSPL.showWaitPanel();
 		BSPL.getDataService().getReportList(new AsyncCallback<YearReportSummary[]>() {
 			@Override
 			public void onFailure(Throwable caught) {
+				BSPL.hideWaitPanel();
 			}
 			@Override
 			public void onSuccess(YearReportSummary[] result) {
 				int row = 1;
 				for(final YearReportSummary summary : result) {
 					table.setText(row, 0, summary.getCompanyName());
-					table.setText(row, 1, summary.getYear() + "年");
+					if(summary.getYear().length() > 0) {
+						table.setText(row, 1, summary.getYear() + "年");
+					} else {
+						table.setText(row, 1, "");
+					}
 					table.setText(row, 2, DateTimeFormat.getFormat("yyyy/MM/dd HH:mm:ss").format(summary.getCreateDate()));
 					table.setText(row, 3, DateTimeFormat.getFormat("yyyy/MM/dd HH:mm:ss").format(summary.getLastUpdate()));
 					Button editBtn = new Button("編集");
@@ -99,6 +105,7 @@ public class DashBoardView extends BaseView {
 					table.getCellFormatter().addStyleName(row, 3, "listTableDataCell");
 					row++;
 				}
+				BSPL.hideWaitPanel();
 			}
 		});
 		
@@ -135,6 +142,15 @@ public class DashBoardView extends BaseView {
 		FlowPanel footer = new FlowPanel();
 		footer.addStyleName("footerArea");
 		footer.add(new InlineLabel("Version: " + ProductInfo.version));
+		
+		footer.add(new InlineHTML("&nbsp;&nbsp;&nbsp;&nbsp;"));
+		
+		// report bug link
+		Anchor bugReportLink = new Anchor("不具合を報告する");
+		bugReportLink.setHref("http://spreadsheets.google.com/viewform?formkey=dEdBR0Q4bVdiZmNhV3JtRFpLcnNuUWc6MQ");
+		bugReportLink.setTarget("_blank");
+		footer.add(bugReportLink);
+		
 		this.add(footer);
 	}
 

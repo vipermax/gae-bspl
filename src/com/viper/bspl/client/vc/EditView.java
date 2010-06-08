@@ -18,6 +18,7 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.InlineHTML;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.ListBox;
+import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.xml.client.Document;
 import com.google.gwt.xml.client.XMLParser;
@@ -39,7 +40,7 @@ public class EditView extends BaseView {
 	YearReport yearReportBeforeEdit = new YearReport();
 	
 	public static TextBox companyNameText = new TextBox();
-	public static ListBox yearList = new ListBox();;
+	public static ListBox yearList = new ListBox();
 	
 	FlowPanel mainArea = new FlowPanel();
 	DecoratedTabPanel mainTab = new DecoratedTabPanel();
@@ -55,6 +56,19 @@ public class EditView extends BaseView {
 
 	public void setYearReport(YearReport yearReport) {
 		this.yearReport = yearReport;
+	}
+	
+	public static String getCompanyName() {
+		return companyNameText.getText();
+	}
+	
+	public static String getYear() {
+		int selectedIndex = yearList.getSelectedIndex();
+		if(selectedIndex > 0) {
+			return yearList.getValue(selectedIndex);
+		} else {
+			return "";
+		}
 	}
 
 	@Override
@@ -94,6 +108,15 @@ public class EditView extends BaseView {
 		FlowPanel footer = new FlowPanel();
 		footer.addStyleName("footerArea");
 		footer.add(new InlineLabel("Version: " + ProductInfo.version));
+		
+		footer.add(new InlineHTML("&nbsp;&nbsp;&nbsp;&nbsp;"));
+		
+		// report bug link
+		Anchor bugReportLink = new Anchor("不具合を報告する");
+		bugReportLink.setHref("http://spreadsheets.google.com/viewform?formkey=dEdBR0Q4bVdiZmNhV3JtRFpLcnNuUWc6MQ");
+		bugReportLink.setTarget("_blank");
+		footer.add(bugReportLink);
+		
 		this.add(footer);
 	}
 	
@@ -202,15 +225,18 @@ public class EditView extends BaseView {
 			}
 		}
 		
+		BSPL.showWaitPanel();
 		BSPL.getDataService().addOrUpdateYearReport(yearReport, new AsyncCallback<String>() {
 			@Override
 			public void onFailure(Throwable caught) {
+				BSPL.hideWaitPanel();
 				if(!autoSave) {
 					Window.alert("保存失敗しました。");
 				}
 			}
 			@Override
 			public void onSuccess(String result) {
+				BSPL.hideWaitPanel();
 				yearReport.getSummary().setId(Long.parseLong(result));
 				if(!autoSave) {
 					Window.alert("データをサーバーに保存しました。");

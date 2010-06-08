@@ -6,6 +6,7 @@ import java.util.Map;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.viper.bspl.client.rpc.DataService;
 import com.viper.bspl.client.rpc.DataServiceAsync;
@@ -13,6 +14,7 @@ import com.viper.bspl.client.vc.BaseView;
 import com.viper.bspl.client.vc.DashBoardView;
 import com.viper.bspl.client.vc.EditView;
 import com.viper.bspl.client.vc.LoginView;
+import com.viper.bspl.client.vc.ViewUtil;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
@@ -26,6 +28,7 @@ public class BSPL implements EntryPoint {
 	}
 	
 	static BaseView currentView = null;
+	static PopupPanel waitPanel = ViewUtil.getWaitPanel();
 	
 	static private LoginInfo loginInfo = null;
 	static private DataServiceAsync dataServiceAsync = GWT.create(DataService.class);
@@ -84,12 +87,15 @@ public class BSPL implements EntryPoint {
 				id = parameters.get("id");
 			}
 			if(VIEW_TYPE.editView == type && !id.isEmpty()) {
+				BSPL.showWaitPanel();
 				BSPL.getDataService().getYearReport(id, new AsyncCallback<YearReport>() {
 					@Override
 					public void onFailure(Throwable caught) {
+						BSPL.hideWaitPanel();
 					}
 					@Override
 					public void onSuccess(YearReport result) {
+						BSPL.hideWaitPanel();
 						((EditView)currentView).setYearReport(result);
 						currentView.initView();
 						RootPanel.get("view").add(currentView);
@@ -114,6 +120,14 @@ public class BSPL implements EntryPoint {
 		default:
 			return null;
 		}
+	}
+	
+	public static void showWaitPanel() {
+		waitPanel.center();
+	}
+	
+	public static void hideWaitPanel() {
+		waitPanel.hide();
 	}
 	
 }
