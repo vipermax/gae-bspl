@@ -97,6 +97,11 @@ public class BSPL implements EntryPoint {
 					public void onSuccess(YearReport result) {
 						BSPL.hideWaitPanel();
 						((EditView)currentView).setYearReport(result);
+						if(result.getSummary().getCreatorEmail().equals(loginInfo.getEmailAddress())) {
+							((EditView)currentView).setReadonlyMode(false);
+						} else {
+							((EditView)currentView).setReadonlyMode(true);
+						}
 						currentView.initView();
 						RootPanel.get("view").add(currentView);
 					}

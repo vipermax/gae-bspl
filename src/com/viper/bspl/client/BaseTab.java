@@ -10,6 +10,6 @@ public abstract class BaseTab {
 		return fp;
 	}
 	
-	abstract void init();
+	abstract void init(boolean readonlyMode);
 	
 }

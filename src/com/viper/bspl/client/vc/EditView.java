@@ -39,6 +39,8 @@ public class EditView extends BaseView {
 	YearReport yearReport = new YearReport();
 	YearReport yearReportBeforeEdit = new YearReport();
 	
+	boolean readonlyMode = false;
+	
 	public static TextBox companyNameText = new TextBox();
 	public static ListBox yearList = new ListBox();
 	
@@ -69,6 +71,15 @@ public class EditView extends BaseView {
 		} else {
 			return "";
 		}
+	}
+
+	
+	public boolean isReadonlyMode() {
+		return readonlyMode;
+	}
+
+	public void setReadonlyMode(boolean readonlyMode) {
+		this.readonlyMode = readonlyMode;
 	}
 
 	@Override
@@ -133,7 +144,9 @@ public class EditView extends BaseView {
 		returnBtn.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
-				saveCurrentReportToServer(true);
+				if(!readonlyMode) {
+					saveCurrentReportToServer(true);
+				}
 				Map<String, String> params = new HashMap<String, String>();
 				BSPL.switchView(VIEW_TYPE.listView, params);
 			}
@@ -143,22 +156,35 @@ public class EditView extends BaseView {
 		infoArea.add(new InlineHTML("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"));
 		
 		// save button
-		Button saveBtn = new Button("保存");
-		saveBtn.addClickHandler(new ClickHandler() {
-			@Override
-			public void onClick(ClickEvent event) {
-				saveCurrentReportToServer(false);
-			}
-		});
-
-		infoArea.add(saveBtn);
+		if(!readonlyMode) {
+			Button saveBtn = new Button("保存");
+			saveBtn.addClickHandler(new ClickHandler() {
+				@Override
+				public void onClick(ClickEvent event) {
+					saveCurrentReportToServer(false);
+				}
+			});
+	
+			infoArea.add(saveBtn);
+		} else {
+			InlineLabel lb = new InlineLabel("ほかのユーザーが作成した財務諸表を編集すること出来ません。" +
+					"(この財務諸表の作成者：" + yearReport.getSummary().getCreatorNickname() + "さん)");
+			lb.addStyleName("warningLabel");
+			infoArea.add(lb);
+		}
 		
 		infoArea.add(new InlineHTML("<br/>"));
 		
 		// info
 		infoArea.add(new InlineLabel("会社名:"));
+		companyNameText.setVisibleLength(30);
 		if(yearReport.getSummary().getId() > 0) {
 			companyNameText.setText(yearReport.getSummary().getCompanyName());
+		}
+		if(readonlyMode) {
+			companyNameText.setEnabled(false);
+		} else {
+			companyNameText.setEnabled(true);
 		}
 		infoArea.add(companyNameText);
 		
@@ -176,6 +202,11 @@ public class EditView extends BaseView {
 					break;
 				}
 			}
+		}
+		if(readonlyMode) {
+			yearList.setEnabled(false);
+		} else {
+			yearList.setEnabled(true);
 		}
 		infoArea.add(yearList);
 		
@@ -259,17 +290,17 @@ public class EditView extends BaseView {
 		}
 		
 		// bs tab
-		bsTab.init();
+		bsTab.init(readonlyMode);
 		
 		mainTab.add(bsTab.getContent(), "BS");
 		
 		// pl tab
-		plTab.init();
+		plTab.init(readonlyMode);
 
 		mainTab.add(plTab.getContent(), "PL");
 		
 		// result tab
-		resultTab.init();
+		resultTab.init(readonlyMode);
 		
 		mainTab.add(resultTab.getContent(), "比例縮尺図（結果）");
 		

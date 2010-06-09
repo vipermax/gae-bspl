@@ -17,7 +17,7 @@ public class ItemVC {
 	
 	static NumberFormat fm = NumberFormat.getFormat("###0.###");
 	
-	static public void fillToRow(final BlockVC block, Item item, int row, int level) {
+	static public void fillToRow(final BlockVC block, Item item, int row, int level, boolean readonlyMode) {
 		
 		FlexTable table = block.getBlockTable();
 		table.addStyleName("blockTable");
@@ -27,7 +27,7 @@ public class ItemVC {
 		nameText.setMaxLength(15);
 		nameText.setVisibleLength(15);
 		nameText.setValue(item.getName());
-		if(level < 2) {
+		if(level < 2 || readonlyMode) {
 			nameText.setEnabled(false);
 		}
 		table.setWidget(row, 0, nameText);
@@ -37,7 +37,7 @@ public class ItemVC {
 		amountText.setMaxLength(10);
 		amountText.setVisibleLength(10);
 		amountText.setValue(fm.format(item.getAmount()));
-		if(item.isAutoCalulate()) {
+		if(item.isAutoCalulate() || readonlyMode) {
 			amountText.setEnabled(false);
 		} else {
 			amountText.addKeyPressHandler(new KeyPressHandler() {

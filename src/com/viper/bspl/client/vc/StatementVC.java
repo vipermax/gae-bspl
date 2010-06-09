@@ -17,9 +17,11 @@ public class StatementVC {
 	ArrayList<BlockVC> rightBlocks = new ArrayList<BlockVC>();
 	
 	private Statement state = null;
+	private boolean readonlyMode = false;
 
-	public StatementVC(Statement state) {
+	public StatementVC(Statement state, boolean readonlyMode) {
 		this.state = state;
+		this.readonlyMode = readonlyMode;
 		init();
 	}
 	
@@ -47,13 +49,13 @@ public class StatementVC {
 		}
 		
 		for(Item item : state.getLeftPart()) {
-			BlockVC block = new BlockVC(item);
+			BlockVC block = new BlockVC(item, readonlyMode);
 			leftBlocks.add(block);
 			leftPanel.add(block.getBlockTable());
 		}
 
 		for(Item item : state.getRightPart()) {
-			BlockVC block = new BlockVC(item);
+			BlockVC block = new BlockVC(item, readonlyMode);
 			rightBlocks.add(block);
 			rightPanel.add(block.getBlockTable());
 		}

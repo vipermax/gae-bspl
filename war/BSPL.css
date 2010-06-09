@@ -11,6 +11,17 @@ body {
 	font-weight: bold;
 }
 
+button {
+	margin: 2px;
+}
+
+.warningLabel {
+	color: #9F6000;
+	padding: 0 2px !important;
+	border: 1px solid #9F6000;
+	background-color: #FEEFB3;
+}
+
 h1 {
 	font-size: 20px;
 	font-weight: bold;

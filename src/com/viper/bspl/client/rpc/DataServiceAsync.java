@@ -8,6 +8,6 @@ public interface DataServiceAsync {
 	
 	public void addOrUpdateYearReport(YearReport yearReport, AsyncCallback<String> async);
 	public void getYearReport(String id, AsyncCallback<YearReport> async);
-	public void getReportList(AsyncCallback<YearReportSummary[]> async);
+	public void getReportList(String creatorEmail, AsyncCallback<YearReportSummary[]> async);
 	
 }

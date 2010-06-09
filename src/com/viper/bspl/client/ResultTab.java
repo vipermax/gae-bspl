@@ -52,7 +52,7 @@ public class ResultTab extends BaseTab {
 	}
 
 	@Override
-	public void init() {
+	public void init(boolean readonlyMode) {
 		// redraw button
 		Button prevButton = new Button("再描画");
 //		prevButton.addStyleName("btnPreview");

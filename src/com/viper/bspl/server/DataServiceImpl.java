@@ -75,14 +75,19 @@ public class DataServiceImpl extends RemoteServiceServlet implements
 	}
 	
 	@Override
-	public YearReportSummary[] getReportList() throws NotLoggedInException {
+	public YearReportSummary[] getReportList(String creatorEmail) throws NotLoggedInException {
 		checkLoggedIn();
 		PersistenceManager pm = getPersistenceManager();
 		try {
-			Query query = pm.newQuery(DBInnerYearReport.class, "creatorEmail==email");
-			query.declareParameters("java.lang.String email");
+			Query query = pm.newQuery(DBInnerYearReport.class);
+			ArrayList parameters = new ArrayList();
+			if(creatorEmail.trim().length() > 0) {
+				query.setFilter("creatorEmail==email");
+				query.declareParameters("java.lang.String email");
+				parameters.add(creatorEmail);
+			}
 			query.setOrdering("lastUpdate desc");
-			List<DBInnerYearReport> queryResult = (List<DBInnerYearReport>) query.execute(getUser().getEmail());
+			List<DBInnerYearReport> queryResult = (List<DBInnerYearReport>) query.executeWithArray(parameters.toArray());
 			ArrayList<YearReportSummary> summaryList = new ArrayList<YearReportSummary>();
 			for(DBInnerYearReport dbReport : queryResult) {
 				YearReport yearReport = convert(dbReport);

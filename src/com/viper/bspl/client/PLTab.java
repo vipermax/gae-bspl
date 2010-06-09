@@ -24,10 +24,9 @@ public class PLTab extends BaseTab {
 	}
 
 	@Override
-	public
-	void init() {
+	public void init(boolean readonlyMode) {
 
-		stateVC = new StatementVC(state);
+		stateVC = new StatementVC(state, readonlyMode);
 
 		// preview button
 		Button prevButton = new Button("PLプレビュー");
