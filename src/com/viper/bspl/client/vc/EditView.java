@@ -18,6 +18,7 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.InlineHTML;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.ListBox;
+import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.xml.client.Document;
 import com.google.gwt.xml.client.XMLParser;
@@ -36,9 +37,12 @@ import com.viper.bspl.client.rpc.ServiceResponse;
 public class EditView extends BaseView {
 
 	YearReport yearReport = new YearReport();
+	YearReport yearReportBeforeEdit = new YearReport();
+	
+	boolean readonlyMode = false;
 	
 	public static TextBox companyNameText = new TextBox();
-	public static ListBox yearList = new ListBox();;
+	public static ListBox yearList = new ListBox();
 	
 	FlowPanel mainArea = new FlowPanel();
 	DecoratedTabPanel mainTab = new DecoratedTabPanel();
@@ -55,6 +59,28 @@ public class EditView extends BaseView {
 	public void setYearReport(YearReport yearReport) {
 		this.yearReport = yearReport;
 	}
+	
+	public static String getCompanyName() {
+		return companyNameText.getText();
+	}
+	
+	public static String getYear() {
+		int selectedIndex = yearList.getSelectedIndex();
+		if(selectedIndex > 0) {
+			return yearList.getValue(selectedIndex);
+		} else {
+			return "";
+		}
+	}
+
+	
+	public boolean isReadonlyMode() {
+		return readonlyMode;
+	}
+
+	public void setReadonlyMode(boolean readonlyMode) {
+		this.readonlyMode = readonlyMode;
+	}
 
 	@Override
 	public void initView() {
@@ -62,6 +88,9 @@ public class EditView extends BaseView {
 		loadInfoArea();
 		loadMainArea();
 		loadFooter();
+		
+		collectReportDate();
+		yearReportBeforeEdit = yearReport.deepClone();
 	}
 
 	@Override
@@ -90,6 +119,15 @@ public class EditView extends BaseView {
 		FlowPanel footer = new FlowPanel();
 		footer.addStyleName("footerArea");
 		footer.add(new InlineLabel("Version: " + ProductInfo.version));
+		
+		footer.add(new InlineHTML("&nbsp;&nbsp;&nbsp;&nbsp;"));
+		
+		// report bug link
+		Anchor bugReportLink = new Anchor("不具合を報告する");
+		bugReportLink.setHref("http://spreadsheets.google.com/viewform?formkey=dEdBR0Q4bVdiZmNhV3JtRFpLcnNuUWc6MQ");
+		bugReportLink.setTarget("_blank");
+		footer.add(bugReportLink);
+		
 		this.add(footer);
 	}
 	
@@ -99,13 +137,16 @@ public class EditView extends BaseView {
 		FlowPanel infoArea = new FlowPanel();
 		infoArea.addStyleName("infoArea");
 
-		infoArea.add(new InlineHTML("<h1>BS、PL比例図（単年度）</h1>"));
+		infoArea.add(new InlineHTML("<h1>BS、PL比例縮尺図（単年度）</h1>"));
 
 		// returnto list button
 		Button returnBtn = new Button("<<一覧へ戻る");
 		returnBtn.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
+				if(!readonlyMode) {
+					saveCurrentReportToServer(true);
+				}
 				Map<String, String> params = new HashMap<String, String>();
 				BSPL.switchView(VIEW_TYPE.listView, params);
 			}
@@ -115,63 +156,35 @@ public class EditView extends BaseView {
 		infoArea.add(new InlineHTML("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"));
 		
 		// save button
-		Button saveBtn = new Button("保存");
-		saveBtn.addClickHandler(new ClickHandler() {
-			@Override
-			public void onClick(ClickEvent event) {
-				
-				YearReportSummary summary = yearReport.getSummary();
-				summary.setCompanyName(companyNameText.getText().trim());
-				int selectedIndex = yearList.getSelectedIndex();
-				if(selectedIndex > 0) {
-					summary.setYear(yearList.getValue(selectedIndex));
-				} else {
-					summary.setYear("");
+		if(!readonlyMode) {
+			Button saveBtn = new Button("保存");
+			saveBtn.addClickHandler(new ClickHandler() {
+				@Override
+				public void onClick(ClickEvent event) {
+					saveCurrentReportToServer(false);
 				}
-				
-				if(summary.getCompanyName().isEmpty() || summary.getYear().isEmpty()) {
-					Window.alert("[会社名]と[年度]を入力してください。");
-					return;
-				}
-				
-				Date nowDate = new Date();
-				summary.setCreateDate(nowDate);
-				summary.setLastUpdate(nowDate);
-				LoginInfo loginInfo = BSPL.getLoginInfo();
-				summary.setCreatorNickname(loginInfo.getNickname());
-				summary.setCreatorEmail(loginInfo.getEmailAddress());
-
-				yearReport.setSummary(summary);
-				
-				// generate xml
-				BSPLPairContainer container = new BSPLPairContainer();
-				container.setBsState(bsTab.getStatement());
-				container.setPlState(plTab.getStatement());
-
-				yearReport.setXmlData(container.serializeToXMLString());
-				
-				BSPL.getDataService().addOrUpdateYearReport(yearReport, new AsyncCallback<String>() {
-					@Override
-					public void onFailure(Throwable caught) {
-						Window.alert("保存失敗しました。");
-					}
-					@Override
-					public void onSuccess(String result) {
-						yearReport.getSummary().setId(Long.parseLong(result));
-						Window.alert("データをサーバーに保存しました。");
-					}
-				});
-			}
-		});
-
-		infoArea.add(saveBtn);
+			});
+	
+			infoArea.add(saveBtn);
+		} else {
+			InlineLabel lb = new InlineLabel("ほかのユーザーが作成した財務諸表を編集すること出来ません。" +
+					"(この財務諸表の作成者：" + yearReport.getSummary().getCreatorNickname() + "さん)");
+			lb.addStyleName("warningLabel");
+			infoArea.add(lb);
+		}
 		
 		infoArea.add(new InlineHTML("<br/>"));
 		
 		// info
 		infoArea.add(new InlineLabel("会社名:"));
+		companyNameText.setVisibleLength(30);
 		if(yearReport.getSummary().getId() > 0) {
 			companyNameText.setText(yearReport.getSummary().getCompanyName());
+		}
+		if(readonlyMode) {
+			companyNameText.setEnabled(false);
+		} else {
+			companyNameText.setEnabled(true);
 		}
 		infoArea.add(companyNameText);
 		
@@ -190,9 +203,77 @@ public class EditView extends BaseView {
 				}
 			}
 		}
+		if(readonlyMode) {
+			yearList.setEnabled(false);
+		} else {
+			yearList.setEnabled(true);
+		}
 		infoArea.add(yearList);
 		
 		this.add(infoArea);
+	}
+	
+	private void collectReportDate() {
+		
+		YearReportSummary summary = yearReport.getSummary();
+		summary.setCompanyName(companyNameText.getText().trim());
+		int selectedIndex = yearList.getSelectedIndex();
+		if(selectedIndex > 0) {
+			summary.setYear(yearList.getValue(selectedIndex));
+		} else {
+			summary.setYear("");
+		}
+		
+		Date nowDate = new Date();
+		summary.setCreateDate(nowDate);
+		summary.setLastUpdate(nowDate);
+		LoginInfo loginInfo = BSPL.getLoginInfo();
+		summary.setCreatorNickname(loginInfo.getNickname());
+		summary.setCreatorEmail(loginInfo.getEmailAddress());
+
+		// generate xml
+		BSPLPairContainer container = new BSPLPairContainer();
+		container.setBsState(bsTab.getStatement());
+		container.setPlState(plTab.getStatement());
+
+		yearReport.setXmlData(container.serializeToXMLString());
+		
+	}
+	
+	private void saveCurrentReportToServer(final boolean autoSave) {
+		
+		collectReportDate();
+		
+		if(yearReport.equals(yearReportBeforeEdit)) {
+			return;
+		}
+		
+		// company and year must bo input
+		if(yearReport.getSummary().getCompanyName().isEmpty() || yearReport.getSummary().getYear().isEmpty()) {
+			if(!autoSave) {
+				Window.alert("[会社名]と[年度]を入力してください。");
+				return;
+			}
+		}
+		
+		BSPL.showWaitPanel();
+		BSPL.getDataService().addOrUpdateYearReport(yearReport, new AsyncCallback<String>() {
+			@Override
+			public void onFailure(Throwable caught) {
+				BSPL.hideWaitPanel();
+				if(!autoSave) {
+					Window.alert("保存失敗しました。");
+				}
+			}
+			@Override
+			public void onSuccess(String result) {
+				BSPL.hideWaitPanel();
+				yearReport.getSummary().setId(Long.parseLong(result));
+				if(!autoSave) {
+					Window.alert("データをサーバーに保存しました。");
+				}
+			}
+		});
 	}
 	
 	private void loadMainArea() {
@@ -209,19 +290,19 @@ public class EditView extends BaseView {
 		}
 		
 		// bs tab
-		bsTab.init();
+		bsTab.init(readonlyMode);
 		
 		mainTab.add(bsTab.getContent(), "BS");
 		
 		// pl tab
-		plTab.init();
+		plTab.init(readonlyMode);
 
 		mainTab.add(plTab.getContent(), "PL");
 		
 		// result tab
-		resultTab.init();
+		resultTab.init(readonlyMode);
 		
-		mainTab.add(resultTab.getContent(), "比例図（結果）");
+		mainTab.add(resultTab.getContent(), "比例縮尺図（結果）");
 		
 		mainTab.setWidth("100%");
 		mainTab.selectTab(0);

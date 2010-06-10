@@ -7,6 +7,7 @@ public class BlockVC {
 	
 	private FlexTable blockTable = new FlexTable();
 	private Item item = null;
+	private boolean readonlyMode = false;
 	
 	public FlexTable getBlockTable() {
 		return blockTable;
@@ -20,8 +21,9 @@ public class BlockVC {
 		this.item = item;
 	}
 
-	public BlockVC(Item item) {
+	public BlockVC(Item item, boolean readonlyMode) {
 		this.item = item;
+		this.readonlyMode = readonlyMode;
 		init();
 	}
 
@@ -34,7 +36,7 @@ public class BlockVC {
 	}
 	
 	public int fillToTable(Item item, int row, int level) {
-		ItemVC.fillToRow(this, item, row, level);
+		ItemVC.fillToRow(this, item, row, level, readonlyMode);
 		int rowCount = 1;
 		for(Item child : item.getChildren()) {
 			rowCount += fillToTable(child, row+rowCount, level+1);
@@ -46,7 +48,6 @@ public class BlockVC {
 		int level = ItemVC.getRowLevel(blockTable, 0);
 		item = ItemVC.getFromRow(blockTable, 0);
 		if(null != item) {
-//			collectDataFromInput(item, level, 1);
 			collectDataFromInput222(item, level, 0);
 			item.getAmount();
 		}

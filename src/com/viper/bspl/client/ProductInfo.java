@@ -2,6 +2,6 @@ package com.viper.bspl.client;
 
 public class ProductInfo {
 	
-	static public final String version = "alpha3"; 
+	static public final String version = "alpha4_build001"; 
 	
 }

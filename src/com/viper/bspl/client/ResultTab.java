@@ -52,27 +52,22 @@ public class ResultTab extends BaseTab {
 	}
 
 	@Override
-	public void init() {
+	public void init(boolean readonlyMode) {
 		// redraw button
 		Button prevButton = new Button("再描画");
 //		prevButton.addStyleName("btnPreview");
 		prevButton.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
-				companyName = EditView.companyNameText.getText();
-				int selectedIndex = EditView.yearList.getSelectedIndex();
-				if(selectedIndex > 0) {
-					year = EditView.yearList.getValue(selectedIndex);
-				} else {
-					year = "";
-				}
+				companyName = EditView.getCompanyName();
+				year = EditView.getYear();
 				reDraw();
 			}
 		});
 		fp.add(prevButton);
 
-		int width = (int) (Window.getClientWidth() * 0.8);
-		int height = (int) (Window.getClientHeight() * 0.8);
+		int width = (int) (Window.getClientWidth() * 0.9);
+		int height = (int) (Window.getClientHeight() * 0.9);
 		canvas = new DrawingArea(width, height);
 		fp.add(canvas);
 	}
