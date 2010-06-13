@@ -41,4 +41,13 @@ public class LoginInfo implements Serializable {
 		this.nickname = nickname;
 	}
 	
+	public boolean isAdmin() {
+		for(String email : Const.adminList) {
+			if(email.equals(emailAddress)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
 }

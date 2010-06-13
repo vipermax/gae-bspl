@@ -177,7 +177,7 @@ public class EditView extends BaseView {
 		
 		// info
 		infoArea.add(new InlineLabel("会社名:"));
-		companyNameText.setVisibleLength(30);
+		companyNameText.setVisibleLength(40);
 		if(yearReport.getSummary().getId() > 0) {
 			companyNameText.setText(yearReport.getSummary().getCompanyName());
 		}
@@ -209,6 +209,27 @@ public class EditView extends BaseView {
 			yearList.setEnabled(true);
 		}
 		infoArea.add(yearList);
+		
+		infoArea.add(new InlineHTML("&nbsp;&nbsp;&nbsp;&nbsp;"));
+		
+		// copy button
+		Button copyBtn = new Button("この財務諸表を複製する");
+		copyBtn.addClickHandler(new ClickHandler() {
+			@Override
+			public void onClick(ClickEvent event) {
+				if(!readonlyMode) {
+					saveCurrentReportToServer(true);
+				}
+				// save a copy
+				saveCurrentReportAsCopyToServer();
+				// return to list view
+				Map<String, String> params = new HashMap<String, String>();
+				BSPL.switchView(VIEW_TYPE.listView, params);
+			}
+		});
+		if(!readonlyMode) {
+			infoArea.add(copyBtn);
+		}
 		
 		this.add(infoArea);
 	}
@@ -248,7 +269,7 @@ public class EditView extends BaseView {
 			return;
 		}
 		
-		// company and year must bo input
+		// company and year must be input
 		if(yearReport.getSummary().getCompanyName().isEmpty() || yearReport.getSummary().getYear().isEmpty()) {
 			if(!autoSave) {
 				Window.alert("[会社名]と[年度]を入力してください。");
@@ -275,7 +296,34 @@ public class EditView extends BaseView {
 			}
 		});
 	}
-	
+
+	private void saveCurrentReportAsCopyToServer() {
+		
+		collectReportDate();
+		
+		// company and year must be input
+		if(yearReport.getSummary().getCompanyName().isEmpty() || yearReport.getSummary().getYear().isEmpty()) {
+			Window.alert("[会社名]と[年度]を入力してください。");
+			return;
+		}
+		
+		yearReport.getSummary().setCompanyName(yearReport.getSummary().getCompanyName() + "（コピー）");
+		yearReport.getSummary().setId(0);
+		
+		BSPL.showWaitPanel();
+		BSPL.getDataService().addOrUpdateYearReport(yearReport, new AsyncCallback<String>() {
+			@Override
+			public void onFailure(Throwable caught) {
+				BSPL.hideWaitPanel();
+			}
+			@Override
+			public void onSuccess(String result) {
+				BSPL.hideWaitPanel();
+				yearReport.getSummary().setId(Long.parseLong(result));
+			}
+		});
+	}
+
 	private void loadMainArea() {
 		// main area
 		mainArea.addStyleName("mainArea");

@@ -113,83 +113,86 @@ public class DashBoardView extends BaseView {
 		
 		listPanel.add(selftReportTable);
 
-//		listPanel.add(new InlineHTML("<div class=\"caution\">" +
-//				"<p>注意：このサイトは皆さんが作成した比例縮尺図を共有するためのサイトであります。<br/>" +
-//				"基本的、個人作ったデータは、後ほど全ユーザーに公開することを予定しています。<br/>" +
-//				"御了承ください。</p></div>"));
+		listPanel.add(new InlineHTML("<div class=\"caution\">" +
+				"<p>注意：このサイトは皆さんが作成した比例縮尺図を共有するためのサイトであります。<br/>" +
+				"基本的、個人作ったデータは、後ほど全ユーザーに公開することを予定しています。<br/>" +
+				"御了承ください。</p></div>"));
 		
-		listPanel.add(new InlineHTML("<br/>"));
-		
-		listPanel.add(new InlineHTML("<h2>ほかのユーザーが作成した財務諸表</h2>"));
-
-		// self report list
-		final FlexTable allReportTable = new FlexTable();
-		allReportTable.setText(0, 0, "会社名");
-		allReportTable.setText(0, 1, "年度");
-		allReportTable.setText(0, 2, "作成日");
-		allReportTable.setText(0, 3, "最終更新日");
-		allReportTable.setText(0, 4, "作成者");
-		allReportTable.setText(0, 5, "");
-		allReportTable.getRowFormatter().addStyleName(0, "listTableHeadRow");
-		allReportTable.getCellFormatter().addStyleName(0, 0, "listTableHeadCell");
-		allReportTable.getCellFormatter().addStyleName(0, 1, "listTableHeadCell");
-		allReportTable.getCellFormatter().addStyleName(0, 2, "listTableHeadCell");
-		allReportTable.getCellFormatter().addStyleName(0, 3, "listTableHeadCell");
-		allReportTable.getCellFormatter().addStyleName(0, 4, "listTableHeadCell");
-		
-		BSPL.showWaitPanel();
-		BSPL.getDataService().getReportList("", new AsyncCallback<YearReportSummary[]>() {
-			@Override
-			public void onFailure(Throwable caught) {
-				BSPL.hideWaitPanel();
-			}
-			@Override
-			public void onSuccess(YearReportSummary[] result) {
-				int row = 1;
-				for(final YearReportSummary summary : result) {
-					
-					if(summary.getCreatorEmail().equals(BSPL.getLoginInfo().getEmailAddress())) {
-						continue;
-					}
-					
-					allReportTable.setText(row, 0, summary.getCompanyName());
-					if(summary.getYear().length() > 0) {
-						allReportTable.setText(row, 1, summary.getYear() + "年");
-					} else {
-						allReportTable.setText(row, 1, "");
-					}
-					allReportTable.setText(row, 2, DateTimeFormat.getFormat("yyyy/MM/dd HH:mm:ss").format(summary.getCreateDate()));
-					allReportTable.setText(row, 3, DateTimeFormat.getFormat("yyyy/MM/dd HH:mm:ss").format(summary.getLastUpdate()));
-//					allReportTable.setText(row, 4, summary.getCreatorNickname() + "(" + summary.getCreatorEmail() + ")");
-					allReportTable.setText(row, 4, summary.getCreatorNickname());
-					Button editBtn = new Button("閲覧");
-					allReportTable.setWidget(row, 5, editBtn);
-					editBtn.addClickHandler(new ClickHandler() {
-						@Override
-						public void onClick(ClickEvent event) {
-							Map<String, String> params = new HashMap<String, String>();
-							params.put("id", Long.toString(summary.getId()));
-							BSPL.switchView(VIEW_TYPE.editView, params);
-						}
-					});
-					// style
-					if(row % 2 == 1) {
-						allReportTable.getRowFormatter().addStyleName(row, "listTableDataRowOdd");
-					} else {
-						allReportTable.getRowFormatter().addStyleName(row, "listTableDataRowEven");
-					}
-					allReportTable.getCellFormatter().addStyleName(row, 0, "listTableDataCell");
-					allReportTable.getCellFormatter().addStyleName(row, 1, "listTableDataCell");
-					allReportTable.getCellFormatter().addStyleName(row, 2, "listTableDataCell");
-					allReportTable.getCellFormatter().addStyleName(row, 3, "listTableDataCell");
-					allReportTable.getCellFormatter().addStyleName(row, 4, "listTableDataCell");
-					row++;
+		if(BSPL.getLoginInfo().isAdmin()) {
+			
+			listPanel.add(new InlineHTML("<br/>"));
+			
+			listPanel.add(new InlineHTML("<h2>ほかのユーザーが作成した財務諸表</h2>"));
+	
+			// self report list
+			final FlexTable allReportTable = new FlexTable();
+			allReportTable.setText(0, 0, "会社名");
+			allReportTable.setText(0, 1, "年度");
+			allReportTable.setText(0, 2, "作成日");
+			allReportTable.setText(0, 3, "最終更新日");
+			allReportTable.setText(0, 4, "作成者");
+			allReportTable.setText(0, 5, "");
+			allReportTable.getRowFormatter().addStyleName(0, "listTableHeadRow");
+			allReportTable.getCellFormatter().addStyleName(0, 0, "listTableHeadCell");
+			allReportTable.getCellFormatter().addStyleName(0, 1, "listTableHeadCell");
+			allReportTable.getCellFormatter().addStyleName(0, 2, "listTableHeadCell");
+			allReportTable.getCellFormatter().addStyleName(0, 3, "listTableHeadCell");
+			allReportTable.getCellFormatter().addStyleName(0, 4, "listTableHeadCell");
+			
+			BSPL.showWaitPanel();
+			BSPL.getDataService().getReportList("", new AsyncCallback<YearReportSummary[]>() {
+				@Override
+				public void onFailure(Throwable caught) {
+					BSPL.hideWaitPanel();
 				}
-				BSPL.hideWaitPanel();
-			}
-		});
-		
-		listPanel.add(allReportTable);
+				@Override
+				public void onSuccess(YearReportSummary[] result) {
+					int row = 1;
+					for(final YearReportSummary summary : result) {
+						
+						if(summary.getCreatorEmail().equals(BSPL.getLoginInfo().getEmailAddress())) {
+							continue;
+						}
+						
+						allReportTable.setText(row, 0, summary.getCompanyName());
+						if(summary.getYear().length() > 0) {
+							allReportTable.setText(row, 1, summary.getYear() + "年");
+						} else {
+							allReportTable.setText(row, 1, "");
+						}
+						allReportTable.setText(row, 2, DateTimeFormat.getFormat("yyyy/MM/dd HH:mm:ss").format(summary.getCreateDate()));
+						allReportTable.setText(row, 3, DateTimeFormat.getFormat("yyyy/MM/dd HH:mm:ss").format(summary.getLastUpdate()));
+						allReportTable.setText(row, 4, summary.getCreatorNickname());
+						Button editBtn = new Button("閲覧");
+						allReportTable.setWidget(row, 5, editBtn);
+						editBtn.addClickHandler(new ClickHandler() {
+							@Override
+							public void onClick(ClickEvent event) {
+								Map<String, String> params = new HashMap<String, String>();
+								params.put("id", Long.toString(summary.getId()));
+								BSPL.switchView(VIEW_TYPE.editView, params);
+							}
+						});
+						// style
+						if(row % 2 == 1) {
+							allReportTable.getRowFormatter().addStyleName(row, "listTableDataRowOdd");
+						} else {
+							allReportTable.getRowFormatter().addStyleName(row, "listTableDataRowEven");
+						}
+						allReportTable.getCellFormatter().addStyleName(row, 0, "listTableDataCell");
+						allReportTable.getCellFormatter().addStyleName(row, 1, "listTableDataCell");
+						allReportTable.getCellFormatter().addStyleName(row, 2, "listTableDataCell");
+						allReportTable.getCellFormatter().addStyleName(row, 3, "listTableDataCell");
+						allReportTable.getCellFormatter().addStyleName(row, 4, "listTableDataCell");
+						row++;
+					}
+					BSPL.hideWaitPanel();
+				}
+			});
+			
+			listPanel.add(allReportTable);
+			
+		}
 		
 		mainPanel.add(listPanel);
 		this.add(mainPanel);
