@@ -6,11 +6,16 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.CheckBox;
+import com.google.gwt.user.client.ui.InlineHTML;
 import com.viper.bspl.client.data.Statement;
 import com.viper.bspl.client.graphic.BSPLGraph;
 import com.viper.bspl.client.vc.EditView;
 
 public class ResultTab extends BaseTab {
+
+	CheckBox cbShowNumber = new CheckBox("数字を表示する");
+	CheckBox cbShowPercent = new CheckBox("パーセンテージを表示する");
 
 	private String companyName = "";
 	private String year = "";
@@ -55,17 +60,23 @@ public class ResultTab extends BaseTab {
 	public void init(boolean readonlyMode) {
 		// redraw button
 		Button prevButton = new Button("再描画");
-//		prevButton.addStyleName("btnPreview");
 		prevButton.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
-				companyName = EditView.getCompanyName();
-				year = EditView.getYear();
 				reDraw();
 			}
 		});
 		fp.add(prevButton);
+		
+		fp.add(new InlineHTML("&nbsp;&nbsp;"));
+		
+		// check button
+		cbShowNumber.setValue(false);
+		fp.add(cbShowNumber);
 
+		cbShowPercent.setValue(false);
+		fp.add(cbShowPercent);
+		
 		int width = (int) (Window.getClientWidth() * 0.9);
 		int height = (int) (Window.getClientHeight() * 0.9);
 		canvas = new DrawingArea(width, height);
@@ -76,11 +87,18 @@ public class ResultTab extends BaseTab {
 		
 		canvas.clear();
 		
+		companyName = EditView.getCompanyName();
+		year = EditView.getYear();
+		boolean showNumber = cbShowNumber.getValue();
+		boolean showPercent = cbShowPercent.getValue();
+		
 		BSPLGraph graph = new BSPLGraph(canvas);
 		graph.setCompanyName(companyName);
 		graph.setYear(year);
 		graph.setBsState(bsState);
 		graph.setPlState(plState);
+		graph.setShowNumber(showNumber);
+		graph.setShowPercent(showPercent);
 		graph.reDraw();
 		
 	}
