@@ -25,7 +25,6 @@ public class DrawUtil {
 			path.lineTo(start.X + wide, (start.Y + end.Y) / 2 + Math.abs(wide));
 			path.lineTo(start.X + wide, end.Y - Math.abs(wide));
 			path.lineTo(start.X, end.Y);
-			
 			path.setStrokeColor("black");
 			path.setStrokeWidth(1);
 			path.setFillOpacity(1.0f);

@@ -1,6 +1,7 @@
 package com.viper.bspl.server;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -35,6 +36,9 @@ public class DataServiceImpl extends RemoteServiceServlet implements
 			if(0 == yearReport.getSummary().getId()) {
 				// insert
 				DBInnerYearReport dbReport = convert(yearReport);
+				Date now = new Date();
+				dbReport.setCreateDate(now);
+				dbReport.setLastUpdate(now);
 				pm.makePersistent(dbReport);
 				id = Long.toString(dbReport.getId());
 			} else {
@@ -45,8 +49,9 @@ public class DataServiceImpl extends RemoteServiceServlet implements
 					DBInnerYearReport targetReport = queryResult.get(0);
 					targetReport.setCompanyName(yearReport.getSummary().getCompanyName());
 					targetReport.setYear(yearReport.getSummary().getYear());
-					targetReport.setLastUpdate(yearReport.getSummary().getLastUpdate());
 					targetReport.setXmlData(yearReport.getXmlData());
+					Date now = new Date();
+					targetReport.setLastUpdate(now);
 					pm.makePersistent(targetReport);
 				}
 			}

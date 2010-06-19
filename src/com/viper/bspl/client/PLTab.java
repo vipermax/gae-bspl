@@ -54,6 +54,8 @@ public class PLTab extends BaseTab {
 		plGraphic.setYear(EditView.getYear());
 		plGraphic.setDrawCompanyName(true);
 		plGraphic.setTitle("損益計算書");
+		plGraphic.setShowNumber(true);
+		plGraphic.setShowPercent(true);
 		plGraphic.reDraw();
 		
 		final PopupPanel popup = new PopupPanel();

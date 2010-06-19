@@ -54,6 +54,8 @@ public class BSTab extends BaseTab {
 		bsGraphic.setYear(EditView.getYear());
 		bsGraphic.setDrawCompanyName(true);
 		bsGraphic.setTitle("貸借対照表");
+		bsGraphic.setShowNumber(true);
+		bsGraphic.setShowPercent(true);
 		bsGraphic.reDraw();
 		
 		final PopupPanel popup = new PopupPanel();

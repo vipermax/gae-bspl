@@ -217,14 +217,7 @@ public class EditView extends BaseView {
 		copyBtn.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
-				if(!readonlyMode) {
-					saveCurrentReportToServer(true);
-				}
-				// save a copy
-				saveCurrentReportAsCopyToServer();
-				// return to list view
-				Map<String, String> params = new HashMap<String, String>();
-				BSPL.switchView(VIEW_TYPE.listView, params);
+				copyReportAndReturnToList();
 			}
 		});
 		if(!readonlyMode) {
@@ -232,6 +225,76 @@ public class EditView extends BaseView {
 		}
 		
 		this.add(infoArea);
+	}
+	
+	private void copyReportAndReturnToList() {
+		if(!readonlyMode) {
+			//
+			// save current report
+			//
+			collectReportDate();
+			
+			if(!yearReport.equals(yearReportBeforeEdit)) {
+				// company and year must be input
+				if(yearReport.getSummary().getCompanyName().isEmpty() || yearReport.getSummary().getYear().isEmpty()) {
+					Window.alert("[会社名]と[年度]を入力してください。");
+					return;
+				}
+				
+				BSPL.showWaitPanel();
+				BSPL.getDataService().addOrUpdateYearReport(yearReport, new AsyncCallback<String>() {
+					@Override
+					public void onFailure(Throwable caught) {
+						BSPL.hideWaitPanel();
+					}
+					@Override
+					public void onSuccess(String result) {
+						
+						//
+						// save a copy
+						//
+						yearReport.getSummary().setCompanyName(yearReport.getSummary().getCompanyName() + "（コピー）");
+						yearReport.getSummary().setId(0);
+						
+						BSPL.getDataService().addOrUpdateYearReport(yearReport, new AsyncCallback<String>() {
+							@Override
+							public void onFailure(Throwable caught) {
+								BSPL.hideWaitPanel();
+							}
+							@Override
+							public void onSuccess(String result) {
+								BSPL.hideWaitPanel();
+								yearReport.getSummary().setId(Long.parseLong(result));
+								// return to list view
+								Map<String, String> params = new HashMap<String, String>();
+								BSPL.switchView(VIEW_TYPE.listView, params);
+							}
+						});
+					}
+				});
+			} else {
+				//
+				// save a copy
+				//
+				yearReport.getSummary().setCompanyName(yearReport.getSummary().getCompanyName() + "（コピー）");
+				yearReport.getSummary().setId(0);
+				
+				BSPL.getDataService().addOrUpdateYearReport(yearReport, new AsyncCallback<String>() {
+					@Override
+					public void onFailure(Throwable caught) {
+						BSPL.hideWaitPanel();
+					}
+					@Override
+					public void onSuccess(String result) {
+						BSPL.hideWaitPanel();
+						yearReport.getSummary().setId(Long.parseLong(result));
+						// return to list view
+						Map<String, String> params = new HashMap<String, String>();
+						BSPL.switchView(VIEW_TYPE.listView, params);
+					}
+				});
+			}
+		}
 	}
 	
 	private void collectReportDate() {
@@ -293,33 +356,6 @@ public class EditView extends BaseView {
 				if(!autoSave) {
 					Window.alert("データをサーバーに保存しました。");
 				}
-			}
-		});
-	}
-
-	private void saveCurrentReportAsCopyToServer() {
-		
-		collectReportDate();
-		
-		// company and year must be input
-		if(yearReport.getSummary().getCompanyName().isEmpty() || yearReport.getSummary().getYear().isEmpty()) {
-			Window.alert("[会社名]と[年度]を入力してください。");
-			return;
-		}
-		
-		yearReport.getSummary().setCompanyName(yearReport.getSummary().getCompanyName() + "（コピー）");
-		yearReport.getSummary().setId(0);
-		
-		BSPL.showWaitPanel();
-		BSPL.getDataService().addOrUpdateYearReport(yearReport, new AsyncCallback<String>() {
-			@Override
-			public void onFailure(Throwable caught) {
-				BSPL.hideWaitPanel();
-			}
-			@Override
-			public void onSuccess(String result) {
-				BSPL.hideWaitPanel();
-				yearReport.getSummary().setId(Long.parseLong(result));
 			}
 		});
 	}
