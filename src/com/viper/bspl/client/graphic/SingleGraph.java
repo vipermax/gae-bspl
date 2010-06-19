@@ -183,7 +183,7 @@ public class SingleGraph extends BaseGraph {
 		canvas.add(rect);
 		
 		// name
-		int nameTextY = start.Y + (int) (item.getAmount() * heightScale) / 2;
+		int nameTextY = start.Y + (int) (item.getAmount() * heightScale) / 2 - 1;
 		if(showNumber || showPercent) {
 			nameTextY -= FONT_SIZE_NAME / 2;
 		}
@@ -197,6 +197,24 @@ public class SingleGraph extends BaseGraph {
 		}
 		Text nameText = DrawUtil.generateText(centerX, nameTextY, item.getName(), FONT_SIZE_BLOCK_NAME, "black", align);
 		canvas.add(nameText);
+		
+		// number text
+		if(showNumber || showPercent) {
+			String numberString = "";
+			if(showNumber) {
+				numberString += fmAmount.format(item.getAmount());
+			}
+			if(showNumber && showPercent) {
+				numberString += " ";
+			}
+			if(showPercent) {
+				numberString += "(" + fmPercent.format(item.getAmount() / selfTotal * 100) + "%)";
+			}
+			
+			int numberTextY = start.Y + (int) (item.getAmount() * heightScale) / 2 + FONT_SIZE_NUMBER / 2 + 1;
+			Text numberText = DrawUtil.generateText(centerX, numberTextY, numberString, FONT_SIZE_NUMBER + 2, "black", align);
+			canvas.add(numberText);
+		}
 		
 		// bracket
 		Point brackStart = new Point(0, 0);
